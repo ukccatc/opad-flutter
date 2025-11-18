@@ -30,15 +30,39 @@ git remote add origin YOUR_REPO_URL
 git push -f origin main:gh-pages
 ```
 
-### 3. Firebase Hosting
+### 3. Firebase Hosting (Recommended)
 
+**Быстрый деплой:**
 ```bash
+cd "/Users/macbookpro/Git Actions/flutter-opad"
+./scripts/deploy_firebase.sh
+```
+
+**Или вручную:**
+```bash
+# 1. Установите Firebase CLI (если еще не установлен)
 npm install -g firebase-tools
+
+# 2. Войдите в Firebase
 firebase login
+
+# 3. Инициализируйте проект (если первый раз)
 firebase init hosting
-# Select build/web as public directory
+# Выберите существующий проект или создайте новый
+# Public directory: build/web
+# Configure as single-page app: Yes
+# Set up automatic builds: No
+
+# 4. Соберите приложение
+flutter build web --release
+
+# 5. Задеплойте
 firebase deploy --only hosting
 ```
+
+**Конфигурация уже настроена:**
+- `firebase.json` - конфигурация хостинга
+- `.firebaserc` - проект по умолчанию (измените на свой)
 
 ### 4. Netlify
 

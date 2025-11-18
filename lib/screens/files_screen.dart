@@ -47,7 +47,9 @@ class _FilesScreenState extends State<FilesScreen> {
       if (_selectedType != null) {
         if (_selectedType == 'doc') {
           // Include both doc and docx for DOC filter
-          files = files.where((f) => f.type == 'doc' || f.type == 'docx').toList();
+          files = files
+              .where((f) => f.type == 'doc' || f.type == 'docx')
+              .toList();
         } else {
           files = files.where((f) => f.type == _selectedType).toList();
         }
@@ -63,7 +65,7 @@ class _FilesScreenState extends State<FilesScreen> {
         print('Downloading file: ${file.name}');
         print('File URL: ${file.url}');
         print('File path: ${file.path}');
-        
+
         // Show loading message
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -74,10 +76,10 @@ class _FilesScreenState extends State<FilesScreen> {
             ),
           );
         }
-        
+
         // For web, use FileDownloader to download the file
         await FileDownloader.downloadFileAsBlob(file.url, file.name);
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -218,9 +220,12 @@ class _FilesScreenState extends State<FilesScreen> {
                       // Type Filter Section
                       Text(
                         'Тип файлу:',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                       ),
                       const SizedBox(height: 8),
@@ -291,9 +296,12 @@ class _FilesScreenState extends State<FilesScreen> {
                       // Year Filter Section
                       Text(
                         'Рік:',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        style: Theme.of(context).textTheme.labelMedium
+                            ?.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                       ),
                       const SizedBox(height: 8),
@@ -344,23 +352,32 @@ class _FilesScreenState extends State<FilesScreen> {
                           Icon(
                             Icons.folder_open_rounded,
                             size: 64,
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Файли не знайдено',
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Спробуйте змінити фільтри пошуку',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                           ),
-                          if (_selectedType != null || _selectedYear != null) ...[
+                          if (_selectedType != null ||
+                              _selectedYear != null) ...[
                             const SizedBox(height: 16),
                             ElevatedButton.icon(
                               onPressed: () {
@@ -368,7 +385,8 @@ class _FilesScreenState extends State<FilesScreen> {
                                   _selectedYear = null;
                                   _selectedType = null;
                                   _searchController.clear();
-                                  _filteredFiles = UploadedFilesData.getAllFiles();
+                                  _filteredFiles =
+                                      UploadedFilesData.getAllFiles();
                                 });
                               },
                               icon: const Icon(Icons.clear_all_rounded),
@@ -390,8 +408,9 @@ class _FilesScreenState extends State<FilesScreen> {
                             leading: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: _getFileIconColor(file.type)
-                                    .withOpacity(0.1),
+                                color: _getFileIconColor(
+                                  file.type,
+                                ).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
@@ -439,9 +458,9 @@ class _FilesScreenState extends State<FilesScreen> {
                                             .textTheme
                                             .bodySmall
                                             ?.copyWith(
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant,
+                                              color: Theme.of(
+                                                context,
+                                              ).colorScheme.onSurfaceVariant,
                                             ),
                                       ),
                                   ],
@@ -465,4 +484,3 @@ class _FilesScreenState extends State<FilesScreen> {
     );
   }
 }
-
