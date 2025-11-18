@@ -1,0 +1,46 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle for radar -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="#1976D2" stroke-width="3" opacity="0.3"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="#1976D2" stroke-width="2" opacity="0.3"/>
+  <circle cx="100" cy="100" r="50" fill="none" stroke="#1976D2" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Radar sweep lines -->
+  <line x1="100" y1="100" x2="100" y2="10" stroke="#1976D2" stroke-width="2" opacity="0.4"/>
+  <line x1="100" y1="100" x2="190" y2="100" stroke="#1976D2" stroke-width="2" opacity="0.4"/>
+  <line x1="100" y1="100" x2="100" y2="190" stroke="#1976D2" stroke-width="2" opacity="0.4"/>
+  <line x1="100" y1="100" x2="10" y2="100" stroke="#1976D2" stroke-width="2" opacity="0.4"/>
+  
+  <!-- Radar center -->
+  <circle cx="100" cy="100" r="8" fill="#1976D2"/>
+  
+  <!-- Radar sweep arc (animated effect) -->
+  <path d="M 100 100 L 100 10 A 90 90 0 0 1 190 100 Z" fill="#1976D2" opacity="0.15"/>
+  
+  <!-- Airplane -->
+  <g transform="translate(100, 100) rotate(45)">
+    <!-- Main body -->
+    <ellipse cx="0" cy="0" rx="25" ry="8" fill="#1976D2"/>
+    
+    <!-- Cockpit -->
+    <ellipse cx="-15" cy="0" rx="6" ry="5" fill="#1565C0"/>
+    
+    <!-- Wings -->
+    <path d="M -10 -5 L -25 -15 L -20 -5 Z" fill="#1976D2"/>
+    <path d="M -10 5 L -25 15 L -20 5 Z" fill="#1976D2"/>
+    
+    <!-- Tail -->
+    <path d="M 15 -3 L 25 -8 L 20 0 Z" fill="#1976D2"/>
+    <path d="M 15 3 L 25 8 L 20 0 Z" fill="#1976D2"/>
+    
+    <!-- Windows -->
+    <circle cx="-8" cy="0" r="2" fill="#E3F2FD"/>
+    <circle cx="0" cy="0" r="2" fill="#E3F2FD"/>
+    <circle cx="8" cy="0" r="2" fill="#E3F2FD"/>
+  </g>
+  
+  <!-- Radar signal dots (aircraft on radar) -->
+  <circle cx="140" cy="60" r="4" fill="#4CAF50"/>
+  <circle cx="60" cy="140" r="4" fill="#4CAF50"/>
+  <circle cx="160" cy="140" r="4" fill="#4CAF50"/>
+</svg>
+

@@ -1,0 +1,4 @@
+# This directory contains uploaded PDF and DOC files from WordPress
+# Files are copied from: /Users/macbookpro/Downloads/admin-1_full-2025-11-01/www/opad.com.ua/wp-content/uploads/
+# Run: python3 scripts/copy_uploads.py to copy files
+

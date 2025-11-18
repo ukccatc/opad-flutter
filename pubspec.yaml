@@ -1,0 +1,32 @@
+name: flutter_opad
+description: "OPAD Flutter Web Application - Migration from WordPress"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  dio: ^5.4.0
+  go_router: ^13.0.0
+  shared_preferences: ^2.2.2
+  url_launcher: ^6.2.5
+  crypto: ^3.0.3
+  flutter_svg: ^2.0.9
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+  
+  # Assets for uploaded files (PDF, DOC)
+  assets:
+    - web/assets/uploads/
+    - assets/logo.svg

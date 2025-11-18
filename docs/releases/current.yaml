@@ -1,0 +1,134 @@
+# Current Release - Active Kanban Board
+
+release:
+  version: "1.0.0"
+  started_at: "2024-01-01"
+  status: "in_progress"
+
+tasks:
+  # Initial Development Tasks
+  - id: "setup-001"
+    title: "Flutter web project setup"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Created Flutter web project structure"
+      - "Configured Material Design 3 theme"
+      - "Set up basic project organization"
+
+  - id: "models-001"
+    title: "Create data models"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Implemented Article model with WordPress post structure"
+      - "Implemented ArticleAttachment model"
+      - "Implemented PersonStats model"
+      - "Added JSON serialization/deserialization"
+
+  - id: "services-001"
+    title: "Implement API service"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Created ApiService with Dio HTTP client"
+      - "Configured base URL: http://opad.com.ua/wp-json/opad/v1"
+      - "Implemented GET /posts endpoint"
+      - "Implemented GET /stats/{login} endpoint"
+      - "Implemented POST /auth/login endpoint"
+
+  - id: "services-002"
+    title: "Implement authentication service"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Created AuthService with SharedPreferences"
+      - "Implemented login persistence"
+      - "Implemented auto-login check"
+      - "Implemented logout functionality"
+
+  - id: "ui-001"
+    title: "Create home screen"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Implemented HomeScreen with welcome message"
+      - "Added navigation to Articles and Login screens"
+      - "Implemented auto-login check on app start"
+
+  - id: "ui-002"
+    title: "Create articles screen"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Implemented ArticlesScreen with list view"
+      - "Added article cards with featured images"
+      - "Implemented attachments display"
+      - "Added pull-to-refresh functionality"
+      - "Added error handling and retry"
+
+  - id: "ui-003"
+    title: "Create login screen"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Implemented LoginScreen with form validation"
+      - "Added login/password input fields"
+      - "Implemented authentication flow"
+      - "Added error display"
+
+  - id: "ui-004"
+    title: "Create statistics screen"
+    status: "done"
+    started_at: "2024-01-01"
+    completed_at: "2024-01-01"
+    changes:
+      - "Implemented StatsScreen for person statistics"
+      - "Added person information display"
+      - "Implemented statistics data visualization"
+      - "Added refresh and logout functionality"
+
+  # Testing and Refinement Tasks
+  - id: "test-001"
+    title: "Test API endpoints with WordPress backend"
+    status: "pending"
+    started_at: null
+    changes: []
+
+  - id: "refactor-001"
+    title: "Move API base URL to environment configuration"
+    status: "pending"
+    started_at: null
+    changes: []
+
+  - id: "enhance-001"
+    title: "Improve error handling across all screens"
+    status: "pending"
+    started_at: null
+    changes: []
+
+  - id: "enhance-002"
+    title: "Implement go_router for navigation"
+    status: "pending"
+    started_at: null
+    changes: []
+
+  - id: "enhance-003"
+    title: "Add comprehensive loading states"
+    status: "pending"
+    started_at: null
+    changes: []
+
+  - id: "enhance-004"
+    title: "Improve responsive design for different screen sizes"
+    status: "pending"
+    started_at: null
+    changes: []
+
