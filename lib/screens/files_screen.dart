@@ -70,7 +70,24 @@ class _FilesScreenState extends State<FilesScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Завантаження файлу: ${file.displayName}...'),
+              content: Row(
+                children: [
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Завантаження файлу: ${file.displayName}...'),
+                  ),
+                ],
+              ),
               duration: const Duration(seconds: 2),
               backgroundColor: Theme.of(context).colorScheme.primary,
             ),
@@ -83,9 +100,21 @@ class _FilesScreenState extends State<FilesScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Файл завантажено: ${file.displayName}'),
+              content: Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_rounded,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Файл завантажено: ${file.displayName}'),
+                  ),
+                ],
+              ),
               duration: const Duration(seconds: 2),
-              backgroundColor: Colors.green,
+              backgroundColor: Theme.of(context).colorScheme.tertiary,
             ),
           );
         }
@@ -126,15 +155,16 @@ class _FilesScreenState extends State<FilesScreen> {
     }
   }
 
-  Color _getFileIconColor(String type) {
+  Color _getFileIconColor(BuildContext context, String type) {
+    final colorScheme = Theme.of(context).colorScheme;
     switch (type.toLowerCase()) {
       case 'pdf':
-        return Colors.red;
+        return colorScheme.error; // Use error color (aviation red) for PDF
       case 'doc':
       case 'docx':
-        return Colors.blue;
+        return colorScheme.primary; // Use primary color (sky blue) for DOC
       default:
-        return Colors.grey;
+        return colorScheme.onSurfaceVariant; // Use surface variant for others
     }
   }
 
@@ -252,11 +282,18 @@ class _FilesScreenState extends State<FilesScreen> {
                                   Icons.picture_as_pdf_rounded,
                                   size: 16,
                                   color: _selectedType == 'pdf'
-                                      ? Theme.of(context).colorScheme.onPrimary
-                                      : Colors.red,
+                                      ? Theme.of(context).colorScheme.onPrimaryContainer
+                                      : Theme.of(context).colorScheme.error,
                                 ),
                                 const SizedBox(width: 4),
-                                const Text('PDF'),
+                                Text(
+                                  'PDF',
+                                  style: TextStyle(
+                                    color: _selectedType == 'pdf'
+                                        ? Theme.of(context).colorScheme.onPrimaryContainer
+                                        : null,
+                                  ),
+                                ),
                               ],
                             ),
                             selected: _selectedType == 'pdf',
@@ -275,11 +312,18 @@ class _FilesScreenState extends State<FilesScreen> {
                                   Icons.description_rounded,
                                   size: 16,
                                   color: _selectedType == 'doc'
-                                      ? Theme.of(context).colorScheme.onPrimary
-                                      : Colors.blue,
+                                      ? Theme.of(context).colorScheme.onPrimaryContainer
+                                      : Theme.of(context).colorScheme.primary,
                                 ),
                                 const SizedBox(width: 4),
-                                const Text('DOC/DOCX'),
+                                Text(
+                                  'DOC/DOCX',
+                                  style: TextStyle(
+                                    color: _selectedType == 'doc'
+                                        ? Theme.of(context).colorScheme.onPrimaryContainer
+                                        : null,
+                                  ),
+                                ),
                               ],
                             ),
                             selected: _selectedType == 'doc',
@@ -403,19 +447,27 @@ class _FilesScreenState extends State<FilesScreen> {
                         final file = _filteredFiles[index];
                         return Card(
                           margin: const EdgeInsets.only(bottom: 12),
-                          elevation: 1,
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
                           child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             leading: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
                                 color: _getFileIconColor(
+                                  context,
                                   file.type,
                                 ).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Icon(
                                 _getFileIcon(file.type),
-                                color: _getFileIconColor(file.type),
+                                color: _getFileIconColor(context, file.type),
                                 size: 28,
                               ),
                             ),
@@ -435,9 +487,19 @@ class _FilesScreenState extends State<FilesScreen> {
                                       Chip(
                                         label: Text(
                                           file.category!,
-                                          style: const TextStyle(fontSize: 11),
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
                                         ),
-                                        padding: EdgeInsets.zero,
+                                        backgroundColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondaryContainer
+                                            .withOpacity(0.5),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
                                         visualDensity: VisualDensity.compact,
                                       ),
                                       const SizedBox(width: 8),
@@ -445,9 +507,19 @@ class _FilesScreenState extends State<FilesScreen> {
                                     Chip(
                                       label: Text(
                                         file.year,
-                                        style: const TextStyle(fontSize: 11),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface,
+                                        ),
                                       ),
-                                      padding: EdgeInsets.zero,
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .tertiaryContainer
+                                          .withOpacity(0.5),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
                                       visualDensity: VisualDensity.compact,
                                     ),
                                     const SizedBox(width: 8),

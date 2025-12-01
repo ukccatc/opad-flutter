@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../models/person_stats.dart';
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
-import 'login_screen.dart';
 
 class StatsScreen extends StatefulWidget {
   final String login;
@@ -33,9 +33,20 @@ class _StatsScreenState extends State<StatsScreen> {
     });
 
     try {
+      // Use widget.login if provided, otherwise get from saved login
+      String loginToUse = widget.login;
+      if (loginToUse.isEmpty) {
+        final savedLogin = await _authService.getLogin();
+        if (savedLogin != null && savedLogin.isNotEmpty) {
+          loginToUse = savedLogin;
+        } else {
+          throw Exception('Login not found');
+        }
+      }
+      
       // Load only stats data from SQL
-      // widget.login can be email or ID (string)
-      final stats = await _apiService.getPersonStats(widget.login);
+      // loginToUse can be email or ID (string)
+      final stats = await _apiService.getPersonStats(loginToUse);
       setState(() {
         _stats = stats;
         _isLoading = false;
@@ -51,10 +62,7 @@ class _StatsScreenState extends State<StatsScreen> {
   Future<void> _handleLogout() async {
     await _authService.logout();
     if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (route) => false,
-      );
+      context.go('/login');
     }
   }
 
@@ -179,6 +187,9 @@ class _StatsScreenState extends State<StatsScreen> {
                                 // Statistics Card
                                 Card(
                                   elevation: 2,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
                                   child: Padding(
                                     padding: const EdgeInsets.all(24),
                                     child: Column(
@@ -270,11 +281,6 @@ class _StatsScreenState extends State<StatsScreen> {
                                           _stats!.isUnionMember ? 'Так' : 'Ні',
                                           icon: Icons.group_rounded,
                                         ),
-                                        _buildStatRow(
-                                          'ID',
-                                          _stats!.id,
-                                          icon: Icons.badge_rounded,
-                                        ),
                                       ],
                                     ),
                                   ),
@@ -296,14 +302,17 @@ class _StatsScreenState extends State<StatsScreen> {
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isAmount
-            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3)
-            : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+            ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4)
+            : Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.4),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+          color: isAmount
+              ? Theme.of(context).colorScheme.primary.withOpacity(0.2)
+              : Theme.of(context).colorScheme.outline.withOpacity(0.15),
+          width: 1,
         ),
       ),
       child: Row(

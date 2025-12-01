@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/logo_widget.dart';
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -10,6 +11,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _authService = AuthService();
+
+  Future<void> _navigateToStats() async {
+    final isLoggedIn = await _authService.isLoggedIn();
+    if (isLoggedIn) {
+      final login = await _authService.getLogin();
+      if (login != null && login.isNotEmpty) {
+        context.go('/stats?login=$login');
+        return;
+      }
+    }
+    // If not logged in, go to login page
+    context.go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,11 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Articles Button
                   Card(
                     elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: InkWell(
                       onTap: () => context.go('/articles'),
                       borderRadius: BorderRadius.circular(16),
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         child: Row(
                           children: [
                             Container(
@@ -116,11 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Files Button
                   Card(
                     elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: InkWell(
                       onTap: () => context.go('/files'),
                       borderRadius: BorderRadius.circular(16),
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         child: Row(
                           children: [
                             Container(
@@ -180,11 +202,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Statistics Button
                   Card(
                     elevation: 2,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: InkWell(
-                      onTap: () => context.go('/login'),
+                      onTap: _navigateToStats,
                       borderRadius: BorderRadius.circular(16),
                       child: Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.all(24),
                         child: Row(
                           children: [
                             Container(

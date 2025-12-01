@@ -20,6 +20,22 @@ class _LoginScreenState extends State<LoginScreen> {
   String? _error;
 
   @override
+  void initState() {
+    super.initState();
+    _checkIfAlreadyLoggedIn();
+  }
+
+  Future<void> _checkIfAlreadyLoggedIn() async {
+    final isLoggedIn = await _authService.isLoggedIn();
+    if (isLoggedIn && mounted) {
+      final login = await _authService.getLogin();
+      if (login != null && login.isNotEmpty) {
+        context.go('/stats?login=$login');
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _loginController.dispose();
     _passwordController.dispose();
@@ -109,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _loginController,
                       decoration: InputDecoration(
                         labelText: 'Електронна пошта',
-                        hintText: 'ваша.пошта@приклад.com',
+                        hintText: 'example@gmail.com',
                         prefixIcon: const Icon(Icons.email_outlined),
                         filled: true,
                       ),
@@ -176,7 +192,23 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
+                    // Forgot Password Link
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: () {
+                          context.push('/forgot-password');
+                        },
+                        child: Text(
+                          'Забули пароль?',
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
                     // Login Button
                     SizedBox(
                       width: double.infinity,

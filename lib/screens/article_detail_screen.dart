@@ -194,8 +194,17 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               runSpacing: 8,
               children: article.tags!.map((tag) {
                 return Chip(
-                  label: Text(tag),
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  label: Text(
+                    tag,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                  ),
+                  backgroundColor: Theme.of(context)
+                      .colorScheme
+                      .primaryContainer
+                      .withOpacity(0.5),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 );
               }).toList(),
             ),

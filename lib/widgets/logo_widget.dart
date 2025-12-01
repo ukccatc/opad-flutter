@@ -8,12 +8,7 @@ class LogoWidget extends StatelessWidget {
   final Color? color;
   final bool showText;
 
-  const LogoWidget({
-    super.key,
-    this.size,
-    this.color,
-    this.showText = false,
-  });
+  const LogoWidget({super.key, this.size, this.color, this.showText = false});
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +33,11 @@ class LogoWidget extends StatelessWidget {
         if (showText) ...[
           const SizedBox(height: 8),
           Text(
-            'OPAD',
+            'О П А Д',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: logoColor,
-                ),
+              fontWeight: FontWeight.bold,
+              color: logoColor,
+            ),
           ),
         ],
       ],
@@ -129,11 +124,11 @@ class _AnimatedLogoWidgetState extends State<AnimatedLogoWidget>
         if (widget.showText) ...[
           const SizedBox(height: 8),
           Text(
-            'OPAD',
+            'О П А Д',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: logoColor,
-                ),
+              fontWeight: FontWeight.bold,
+              color: logoColor,
+            ),
           ),
         ],
       ],
@@ -146,10 +141,7 @@ class RadarSweepPainter extends CustomPainter {
   final double progress;
   final Color color;
 
-  RadarSweepPainter({
-    required this.progress,
-    required this.color,
-  });
+  RadarSweepPainter({required this.progress, required this.color});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -193,4 +185,3 @@ class RadarSweepPainter extends CustomPainter {
     return oldDelegate.progress != progress || oldDelegate.color != color;
   }
 }
-

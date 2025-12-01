@@ -66,6 +66,9 @@ class OpadApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
+          color: Colors.white,
+          shadowColor: Colors.black.withOpacity(0.1),
+          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -74,11 +77,54 @@ class OpadApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            backgroundColor: const Color(0xFF0096D6),
+            foregroundColor: Colors.white,
+          ),
+        ),
+        outlinedButtonTheme: OutlinedButtonThemeData(
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            side: BorderSide(
+              color: const Color(0xFF0096D6),
+              width: 1.5,
+            ),
+          ),
+        ),
+        textButtonTheme: TextButtonThemeData(
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: const Color(0xFFBDBDBD),
+              width: 1,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: const Color(0xFFBDBDBD),
+              width: 1,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: const Color(0xFF0096D6),
+              width: 2,
+            ),
+          ),
           filled: true,
+          fillColor: Colors.white,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 16,
@@ -114,6 +160,47 @@ class OpadApp extends StatelessWidget {
           ),
           unselectedLabelTextStyle: const TextStyle(
             fontSize: 16, // Larger text
+          ),
+        ),
+        snackBarTheme: SnackBarThemeData(
+          backgroundColor: const Color(0xFF1A1A1A),
+          contentTextStyle: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          behavior: SnackBarBehavior.floating,
+          elevation: 4,
+        ),
+        dividerTheme: DividerThemeData(
+          color: const Color(0xFFE0E0E0),
+          thickness: 1,
+          space: 1,
+        ),
+        chipTheme: ChipThemeData(
+          backgroundColor: const Color(0xFFF5F5F5),
+          selectedColor: const Color(0xFFB3E5FC), // Light sky blue (primaryContainer) for better visibility
+          disabledColor: const Color(0xFFE0E0E0),
+          deleteIconColor: const Color(0xFF616161),
+          labelStyle: TextStyle(
+            color: const Color(0xFF616161),
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+          ),
+          secondaryLabelStyle: const TextStyle(
+            color: Color(0xFF003D82), // Dark blue text on light blue background for better contrast
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(
+              color: const Color(0xFF0096D6).withOpacity(0.3),
+              width: 1,
+            ),
           ),
         ),
       ),
