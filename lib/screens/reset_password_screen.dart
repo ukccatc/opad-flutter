@@ -24,6 +24,8 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _isLoading = false;
   String? _error;
   bool _passwordReset = false;
+  bool _isTokenValid = false;
+  bool _isVerifyingToken = true;
 
   @override
   void initState() {
@@ -64,10 +66,14 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     print('Token verification result: $isValid');
 
-    if (!isValid && mounted) {
+    if (mounted) {
       setState(() {
-        _error =
-            'Посилання для відновлення пароля недійсне або застаріле. Запросите нове посилання.';
+        _isVerifyingToken = false;
+        _isTokenValid = isValid;
+        if (!isValid) {
+          _error =
+              'Посилання для відновлення пароля недійсне або застаріле. Запросите нове посилання.';
+        }
       });
     }
   }
@@ -134,9 +140,13 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               constraints: const BoxConstraints(maxWidth: 500),
               child: _passwordReset
                   ? _buildSuccessView()
-                  : Form(
-                      key: _formKey,
-                      child: Column(
+                  : _isVerifyingToken
+                      ? _buildLoadingView()
+                      : !_isTokenValid
+                          ? _buildErrorView()
+                          : Form(
+                              key: _formKey,
+                              child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Icon Section
@@ -308,6 +318,95 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildLoadingView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const CircularProgressIndicator(),
+        const SizedBox(height: 24),
+        Text(
+          'Перевірка посилання...',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.errorContainer,
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            Icons.error_outline_rounded,
+            size: 56,
+            color: Theme.of(context).colorScheme.onErrorContainer,
+          ),
+        ),
+        const SizedBox(height: 32),
+        Text(
+          'Посилання недійсне',
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.errorContainer,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(
+                Icons.info_outline_rounded,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  _error ??
+                      'Посилання для відновлення пароля недійсне або застаріле. Запросите нове посилання.',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onErrorContainer,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 32),
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () => context.go('/forgot-password'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+            ),
+            child: const Text(
+              'Запросити нове посилання',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        TextButton(
+          onPressed: () => context.go('/login'),
+          child: const Text('Повернутися до входу'),
+        ),
+      ],
     );
   }
 

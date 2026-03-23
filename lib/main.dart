@@ -1,7 +1,33 @@
 import 'package:flutter/material.dart';
-import 'router/app_router.dart';
 
-void main() {
+import 'config/database_config.dart';
+import 'router/app_router.dart';
+import 'services/sql_service.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize database configuration
+  DatabaseConfig.initialize();
+
+  // Initialize MySQL connection
+  final sqlService = SqlService();
+  try {
+    await sqlService.initialize();
+    print('✅ MySQL connection initialized');
+
+    // Test connection
+    final isConnected = await sqlService.testConnection();
+    if (isConnected) {
+      print('✅ MySQL connection test successful');
+    } else {
+      print('⚠️ MySQL connection test failed, using local data');
+    }
+  } catch (e) {
+    print('⚠️ MySQL initialization error: $e');
+    print('⚠️ Will use local data only');
+  }
+
   runApp(const OpadApp());
 }
 
@@ -20,39 +46,30 @@ class OpadApp extends StatelessWidget {
           onPrimary: Colors.white,
           primaryContainer: const Color(0xFFB3E5FC), // Light sky blue
           onPrimaryContainer: const Color(0xFF003D82), // Deep sky blue
-          
           // Orange/amber for accents (navigation lights, warnings)
           secondary: const Color(0xFFFF6B35), // Aviation orange
           onSecondary: Colors.white,
           secondaryContainer: const Color(0xFFFFE0B2), // Light orange
           onSecondaryContainer: const Color(0xFFE65100), // Dark orange
-          
           // Tertiary - deep blue (sky depth)
           tertiary: const Color(0xFF003D82), // Deep sky blue
           onTertiary: Colors.white,
           tertiaryContainer: const Color(0xFFE3F2FD), // Very light blue
           onTertiaryContainer: const Color(0xFF001B3D), // Very deep blue
-          
           // Error - red for aviation alerts
           error: const Color(0xFFD32F2F), // Aviation red
           onError: Colors.white,
           errorContainer: const Color(0xFFFFCDD2), // Light red
           onErrorContainer: const Color(0xFFB71C1C), // Dark red
-          
           // Surface colors - white/light gray (clouds, aircraft metal)
           surface: Colors.white,
           onSurface: const Color(0xFF1A1A1A), // Dark gray for text
-          surfaceVariant: const Color(0xFFF5F5F5), // Light gray
-          onSurfaceVariant: const Color(0xFF616161), // Medium gray
-          
-          // Background - very light sky blue
-          background: const Color(0xFFF0F8FF), // Alice blue (sky)
-          onBackground: const Color(0xFF1A1A1A),
-          
+          surfaceContainerHighest: const Color(0xFFF5F5F5), // Light gray
+          onSurfaceVariant: const Color(0xFF616161),
+
           // Outline
           outline: const Color(0xFFBDBDBD), // Light gray
           outlineVariant: const Color(0xFFE0E0E0), // Very light gray
-          
           // Shadow
           shadow: Colors.black26,
           scrim: Colors.black54,
@@ -87,10 +104,7 @@ class OpadApp extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
-            side: BorderSide(
-              color: const Color(0xFF0096D6),
-              width: 1.5,
-            ),
+            side: BorderSide(color: const Color(0xFF0096D6), width: 1.5),
           ),
         ),
         textButtonTheme: TextButtonThemeData(
@@ -104,24 +118,15 @@ class OpadApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: const Color(0xFFBDBDBD),
-              width: 1,
-            ),
+            borderSide: BorderSide(color: const Color(0xFFBDBDBD), width: 1),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: const Color(0xFFBDBDBD),
-              width: 1,
-            ),
+            borderSide: BorderSide(color: const Color(0xFFBDBDBD), width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: const Color(0xFF0096D6),
-              width: 2,
-            ),
+            borderSide: BorderSide(color: const Color(0xFF0096D6), width: 2),
           ),
           filled: true,
           fillColor: Colors.white,
@@ -140,9 +145,7 @@ class OpadApp extends StatelessWidget {
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
-          iconTheme: const IconThemeData(
-            color: Colors.white,
-          ),
+          iconTheme: const IconThemeData(color: Colors.white),
         ),
         navigationRailTheme: NavigationRailThemeData(
           backgroundColor: const Color(0xFFF0F8FF), // Alice blue background
@@ -164,10 +167,7 @@ class OpadApp extends StatelessWidget {
         ),
         snackBarTheme: SnackBarThemeData(
           backgroundColor: const Color(0xFF1A1A1A),
-          contentTextStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 14,
-          ),
+          contentTextStyle: const TextStyle(color: Colors.white, fontSize: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -181,7 +181,9 @@ class OpadApp extends StatelessWidget {
         ),
         chipTheme: ChipThemeData(
           backgroundColor: const Color(0xFFF5F5F5),
-          selectedColor: const Color(0xFFB3E5FC), // Light sky blue (primaryContainer) for better visibility
+          selectedColor: const Color(
+            0xFFB3E5FC,
+          ), // Light sky blue (primaryContainer) for better visibility
           disabledColor: const Color(0xFFE0E0E0),
           deleteIconColor: const Color(0xFF616161),
           labelStyle: TextStyle(
@@ -190,7 +192,9 @@ class OpadApp extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
           secondaryLabelStyle: const TextStyle(
-            color: Color(0xFF003D82), // Dark blue text on light blue background for better contrast
+            color: Color(
+              0xFF003D82,
+            ), // Dark blue text on light blue background for better contrast
             fontSize: 13,
             fontWeight: FontWeight.w600,
           ),

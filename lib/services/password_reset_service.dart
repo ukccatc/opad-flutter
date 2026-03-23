@@ -1,14 +1,18 @@
 import 'dart:convert';
+
 import 'package:crypto/crypto.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../data/users_data.dart';
+import 'sql_service.dart';
 
 /// Service for password reset functionality
 /// Handles token generation, email sending, and password updates
 class PasswordResetService {
-  static const String _resetTokensKey = 'password_reset_tokens';
+  final SqlService _sqlService = SqlService();
   static const String _lastRequestTimeKey = 'password_reset_last_request';
+  static const String _resetTokensKey = 'password_reset_tokens';
   static const int _tokenExpirationHours = 24; // Token valid for 24 hours
   static const int _rateLimitMinutes = 1; // Rate limit: 1 request per minute
 
@@ -21,77 +25,88 @@ class PasswordResetService {
     return digest.toString();
   }
 
-  /// Normalize email (lowercase for consistent comparison)
-  String _normalizeEmail(String email) {
-    return email.trim().toLowerCase();
-  }
-
-  /// Save reset token with expiration
+  /// Save reset token with expiration (using SharedPreferences)
   Future<void> _saveResetToken(String email, String token) async {
-    final normalizedEmail = _normalizeEmail(email);
     final prefs = await SharedPreferences.getInstance();
-    final tokensJson = prefs.getString(_resetTokensKey) ?? '{}';
-    final tokens = Map<String, dynamic>.from(jsonDecode(tokensJson));
+    final tokens = prefs.getStringList(_resetTokensKey) ?? [];
 
-    tokens[normalizedEmail] = {
+    // Remove old tokens for this email
+    final newTokens = tokens.where((t) {
+      try {
+        final data = jsonDecode(t);
+        return data['email'] != email;
+      } catch (e) {
+        return true;
+      }
+    }).toList();
+
+    // Add new token
+    final tokenData = {
+      'email': email,
       'token': token,
       'expiresAt': DateTime.now()
           .add(Duration(hours: _tokenExpirationHours))
           .toIso8601String(),
+      'used': false,
     };
 
-    await prefs.setString(_resetTokensKey, jsonEncode(tokens));
-    print('Saved reset token for email: $normalizedEmail');
+    newTokens.add(jsonEncode(tokenData));
+    await prefs.setStringList(_resetTokensKey, newTokens);
   }
 
-  /// Verify reset token
+  /// Verify reset token (using SharedPreferences)
   Future<bool> verifyResetToken(String email, String token) async {
-    final normalizedEmail = _normalizeEmail(email);
     print('=== Verifying Reset Token ===');
-    print('Original email: $email');
-    print('Normalized email: $normalizedEmail');
+    print('Email: $email');
     print('Token: $token');
 
     final prefs = await SharedPreferences.getInstance();
-    final tokensJson = prefs.getString(_resetTokensKey) ?? '{}';
-    final tokens = Map<String, dynamic>.from(jsonDecode(tokensJson));
+    final tokens = prefs.getStringList(_resetTokensKey) ?? [];
 
-    print('Stored tokens keys: ${tokens.keys.toList()}');
-
-    if (!tokens.containsKey(normalizedEmail)) {
-      print('Email not found in tokens');
-      return false;
+    for (var tokenJson in tokens) {
+      try {
+        final data = jsonDecode(tokenJson);
+        if (data['email'] == email &&
+            data['token'] == token &&
+            data['used'] == false) {
+          final expiresAt = DateTime.parse(data['expiresAt']);
+          if (DateTime.now().isBefore(expiresAt)) {
+            print('✅ Token verified successfully!');
+            return true;
+          } else {
+            print('❌ Token expired');
+          }
+        }
+      } catch (e) {
+        continue;
+      }
     }
 
-    final tokenData = tokens[normalizedEmail] as Map<String, dynamic>;
-    final storedToken = tokenData['token'] as String?;
-    final expiresAt = DateTime.parse(tokenData['expiresAt'] as String);
-
-    print('Stored token: $storedToken');
-    print('Provided token: $token');
-    print('Tokens match: ${storedToken == token}');
-    print('Expires at: $expiresAt');
-    print('Current time: ${DateTime.now()}');
-    print('Is expired: ${DateTime.now().isAfter(expiresAt)}');
-
-    if (storedToken != token || DateTime.now().isAfter(expiresAt)) {
-      print('Token verification failed');
-      return false;
-    }
-
-    print('Token verified successfully!');
-    return true;
+    print('❌ Token verification failed');
+    return false;
   }
 
-  /// Remove used token
-  Future<void> _removeResetToken(String email) async {
-    final normalizedEmail = _normalizeEmail(email);
+  /// Remove used token (mark as used in SharedPreferences)
+  Future<void> _removeResetToken(String email, String token) async {
     final prefs = await SharedPreferences.getInstance();
-    final tokensJson = prefs.getString(_resetTokensKey) ?? '{}';
-    final tokens = Map<String, dynamic>.from(jsonDecode(tokensJson));
+    final tokens = prefs.getStringList(_resetTokensKey) ?? [];
+    final newTokens = <String>[];
 
-    tokens.remove(normalizedEmail);
-    await prefs.setString(_resetTokensKey, jsonEncode(tokens));
+    for (var tokenJson in tokens) {
+      try {
+        final data = jsonDecode(tokenJson);
+        if (data['email'] == email && data['token'] == token) {
+          data['used'] = true;
+          newTokens.add(jsonEncode(data));
+        } else {
+          newTokens.add(tokenJson);
+        }
+      } catch (e) {
+        newTokens.add(tokenJson);
+      }
+    }
+
+    await prefs.setStringList(_resetTokensKey, newTokens);
   }
 
   /// Check if enough time has passed since last password reset request
@@ -144,10 +159,15 @@ class PasswordResetService {
         throw RateLimitException(secondsRemaining);
       }
 
-      // Check if email exists in database
-      final userData = UsersData.findByEmail(email);
-      if (userData == null) {
-        return null; // Email not found
+      // Check if email exists in database (try MySQL first, then fallback to local)
+      try {
+        await _sqlService.getPersonAccount(email);
+      } catch (e) {
+        // Fallback to local data for backward compatibility
+        final userData = UsersData.findByEmail(email);
+        if (userData == null) {
+          return null; // Email not found
+        }
       }
 
       // Generate reset token
@@ -281,7 +301,7 @@ $resetLink
     return 'mailto:$email?subject=${Uri.encodeComponent(subject)}&body=${Uri.encodeComponent(body)}';
   }
 
-  /// Update password in local database
+  /// Update password in MySQL database
   Future<bool> updatePassword(
     String email,
     String token,
@@ -294,25 +314,13 @@ $resetLink
         return false;
       }
 
-      final userData = UsersData.findByEmail(email);
-      if (userData == null) {
-        return false;
-      }
+      // Update password in MySQL database
+      final success = await _sqlService.updatePassword(email, newPassword);
 
-      // Hash new password with MD5
-      final passwordHash = _md5Hash(newPassword);
-
-      // Update password in local data
-      // Note: In a real app, this should update the database
-      // For now, we'll update the in-memory data structure
-      final userIndex = UsersData.users.indexWhere(
-        (user) => user['Email'].toString().toLowerCase() == email.toLowerCase(),
-      );
-
-      if (userIndex != -1) {
-        UsersData.users[userIndex]['Password'] = passwordHash;
-        // Remove used token
-        await _removeResetToken(email);
+      if (success) {
+        // Mark token as used
+        await _removeResetToken(email, token);
+        print('✅ Password updated successfully in MySQL for: $email');
         return true;
       }
 
