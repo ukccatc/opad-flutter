@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'package:flutter_opad/config/database_config.dart';
 import 'package:flutter_opad/services/mysql_service.dart';
 

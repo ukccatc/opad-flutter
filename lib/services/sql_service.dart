@@ -1,12 +1,9 @@
-import 'dart:convert';
+import '../utils/logger.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-import '../data/stats_data.dart';
-import '../data/users_data.dart';
-import '../models/person_account.dart';
-import '../models/person_stats.dart';
+import '../models/m_person_account.dart';
+import '../models/m_person_stats.dart';
 import 'api_service.dart';
 import 'mysql_service.dart';
 
@@ -29,13 +26,13 @@ class SqlService {
       try {
         await _apiService.initialize();
       } catch (e) {
-        print('⚠️ API connection failed, will use local data: $e');
+        Logger.error('⚠️ API connection failed, will use local data', e);
       }
     } else {
       try {
         await _mysqlService.connect();
       } catch (e) {
-        print('⚠️ MySQL connection failed, will use local data: $e');
+        Logger.error('⚠️ MySQL connection failed, will use local data', e);
       }
     }
   }
@@ -47,7 +44,7 @@ class SqlService {
       try {
         return await _apiService.getPersonAccount(email);
       } catch (e) {
-        print('⚠️ API getPersonAccount failed, falling back to local: $e');
+        Logger.warning('⚠️ API getPersonAccount failed, falling back to local: $e');
       }
     }
 
@@ -56,17 +53,12 @@ class SqlService {
       try {
         return await _mysqlService.getPersonAccount(email);
       } catch (e) {
-        print('⚠️ MySQL getPersonAccount failed, falling back to local: $e');
+        Logger.warning('⚠️ MySQL getPersonAccount failed, falling back to local: $e');
       }
     }
 
-    // Fallback to local data
-    final userData = UsersData.findByEmail(email);
-    if (userData == null) {
-      throw Exception('User not found: $email');
-    }
-
-    return PersonAccount.fromJson(userData);
+    // Fallback: throw error if no data found
+    throw Exception('User not found: $email');
   }
 
   /// Get person statistics by email or ID (API/MySQL first, fallback to local)
@@ -76,7 +68,7 @@ class SqlService {
       try {
         return await _apiService.getPersonStats(emailOrId);
       } catch (e) {
-        print('⚠️ API getPersonStats failed, falling back to local: $e');
+        Logger.warning('⚠️ API getPersonStats failed, falling back to local: $e');
       }
     }
 
@@ -85,17 +77,12 @@ class SqlService {
       try {
         return await _mysqlService.getPersonStats(emailOrId);
       } catch (e) {
-        print('⚠️ MySQL getPersonStats failed, falling back to local: $e');
+        Logger.warning('⚠️ MySQL getPersonStats failed, falling back to local: $e');
       }
     }
 
-    // Fallback to local data
-    final statsData = StatsData.findByEmailOrId(emailOrId);
-    if (statsData == null) {
-      throw Exception('Stats not found for: $emailOrId');
-    }
-
-    return PersonStats.fromJson(statsData);
+    // Fallback: throw error if no data found
+    throw Exception('Stats not found for: $emailOrId');
   }
 
   /// Authenticate person (API/MySQL first, fallback to local)
@@ -106,7 +93,7 @@ class SqlService {
       try {
         return await _apiService.authenticatePerson(email, password);
       } catch (e) {
-        print('⚠️ API authentication failed, falling back to local: $e');
+        Logger.warning('⚠️ API authentication failed, falling back to local: $e');
       }
     }
 
@@ -115,28 +102,14 @@ class SqlService {
       try {
         return await _mysqlService.authenticateUser(email, password);
       } catch (e) {
-        print('⚠️ MySQL authentication failed, falling back to local: $e');
+        Logger.warning('⚠️ MySQL authentication failed, falling back to local: $e');
       }
     }
 
-    // Fallback to local data
-    final userData = UsersData.findByEmail(email);
-    if (userData == null) {
-      return false;
-    }
-
-    final passwordHash = _md5Hash(password);
-    final storedHash = userData['Password'] as String? ?? '';
-    return passwordHash.toLowerCase() == storedHash.toLowerCase();
+    // No local authentication without DB/API
+    return false;
   }
 
-  /// MD5 hash function using crypto package (same as WordPress)
-  String _md5Hash(String input) {
-    final secret = 'fsdfsd6287gf'; // From WordPress functions.php
-    final bytes = utf8.encode(secret + input);
-    final digest = md5.convert(bytes);
-    return digest.toString();
-  }
 
   /// Get all users from API/MySQL or local data
   Future<List<PersonStats>> getAllUsers() async {
@@ -144,7 +117,7 @@ class SqlService {
       try {
         return await _apiService.getAllUsers();
       } catch (e) {
-        print('⚠️ API getAllUsers failed: $e');
+        Logger.warning('⚠️ API getAllUsers failed: $e');
       }
     }
 
@@ -152,12 +125,12 @@ class SqlService {
       try {
         return await _mysqlService.getAllUsers();
       } catch (e) {
-        print('⚠️ MySQL getAllUsers failed: $e');
+        Logger.warning('⚠️ MySQL getAllUsers failed: $e');
       }
     }
 
-    // Fallback: convert local data
-    return StatsData.stats.map((stat) => PersonStats.fromJson(stat)).toList();
+    // No local data fallback
+    return [];
   }
 
   /// Get union members only
@@ -166,7 +139,7 @@ class SqlService {
       try {
         return await _apiService.getUnionMembers();
       } catch (e) {
-        print('⚠️ API getUnionMembers failed: $e');
+        Logger.warning('⚠️ API getUnionMembers failed: $e');
       }
     }
 
@@ -174,15 +147,12 @@ class SqlService {
       try {
         return await _mysqlService.getUnionMembers();
       } catch (e) {
-        print('⚠️ MySQL getUnionMembers failed: $e');
+        Logger.warning('⚠️ MySQL getUnionMembers failed: $e');
       }
     }
 
-    // Fallback: filter local data
-    return StatsData.stats
-        .where((stat) => stat['Член-профсоюза'] == '1')
-        .map((stat) => PersonStats.fromJson(stat))
-        .toList();
+    // No local data fallback
+    return [];
   }
 
   /// Update user password
@@ -191,7 +161,7 @@ class SqlService {
       try {
         return await _apiService.updatePassword(email, newPassword);
       } catch (e) {
-        print('⚠️ API updatePassword failed: $e');
+        Logger.error('⚠️ API updatePassword failed', e);
         return false;
       }
     }
@@ -200,13 +170,13 @@ class SqlService {
       try {
         return await _mysqlService.updatePassword(email, newPassword);
       } catch (e) {
-        print('⚠️ MySQL updatePassword failed: $e');
+        Logger.error('⚠️ MySQL updatePassword failed', e);
         return false;
       }
     }
 
     // Can't update local data (read-only)
-    print('⚠️ Cannot update password: Database not connected');
+    Logger.warning('⚠️ Cannot update password: Database not connected');
     return false;
   }
 
@@ -216,7 +186,7 @@ class SqlService {
       try {
         return await _apiService.getDatabaseStats();
       } catch (e) {
-        print('⚠️ API getDatabaseStats failed: $e');
+        Logger.warning('⚠️ API getDatabaseStats failed: $e');
       }
     }
 
@@ -224,24 +194,16 @@ class SqlService {
       try {
         return await _mysqlService.getDatabaseStats();
       } catch (e) {
-        print('⚠️ MySQL getDatabaseStats failed: $e');
+        Logger.warning('⚠️ MySQL getDatabaseStats failed: $e');
       }
     }
 
-    // Fallback: calculate from local data
-    final stats = StatsData.stats;
-    final totalCount = stats.length;
-    final unionCount = stats.where((s) => s['Член-профсоюза'] == '1').length;
-    final totalBalance = stats.fold<int>(
-      0,
-      (sum, s) => sum + (s['Общая сумма'] as int),
-    );
-
+    // No local stats
     return {
-      'total_users': totalCount,
-      'union_members': unionCount,
-      'total_balance': totalBalance,
-      'non_union_members': totalCount - unionCount,
+      'total_users': 0,
+      'union_members': 0,
+      'total_balance': 0,
+      'non_union_members': 0,
     };
   }
 

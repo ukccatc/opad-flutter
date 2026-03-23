@@ -4,8 +4,9 @@ import 'package:crypto/crypto.dart';
 import 'package:mysql1/mysql1.dart';
 
 import '../config/database_config.dart';
-import '../models/person_account.dart';
-import '../models/person_stats.dart';
+import '../models/m_person_account.dart';
+import '../models/m_person_stats.dart';
+import '../utils/logger.dart';
 
 /// Direct MySQL Service for connecting to WordPress database
 /// This service provides direct database access for user authentication and data retrieval
@@ -20,7 +21,7 @@ class MySqlService {
         return;
       }
 
-      print(
+      Logger.info(
         'Connecting to MySQL at ${DatabaseConfig.host}:${DatabaseConfig.port}...',
       );
 
@@ -35,11 +36,11 @@ class MySqlService {
       _connection = await MySqlConnection.connect(settings);
       _isConnected = true;
 
-      print('✅ MySQL connected successfully to ${DatabaseConfig.host}');
+      Logger.info('✅ MySQL connected successfully to ${DatabaseConfig.host}');
     } catch (e) {
       _isConnected = false;
       _connection = null;
-      print('❌ MySQL connection error: $e');
+      Logger.error('❌ MySQL connection error', e);
       rethrow;
     }
   }
@@ -50,9 +51,9 @@ class MySqlService {
       await _connection?.close();
       _isConnected = false;
       _connection = null;
-      print('✅ MySQL connection closed');
+      Logger.info('✅ MySQL connection closed');
     } catch (e) {
-      print('❌ Error closing MySQL connection: $e');
+      Logger.error('❌ Error closing MySQL connection', e);
     }
   }
 
@@ -81,7 +82,7 @@ class MySqlService {
         'user_id': row['user_id'],
       });
     } catch (e) {
-      print('❌ Error getting person account: $e');
+      Logger.error('❌ Error getting person account', e);
       rethrow;
     }
   }
@@ -103,7 +104,7 @@ class MySqlService {
       final row = results.first;
       return _convertRowToPersonStats(row);
     } catch (e) {
-      print('❌ Error getting person stats by email: $e');
+      Logger.error('❌ Error getting person stats by email', e);
       rethrow;
     }
   }
@@ -125,7 +126,7 @@ class MySqlService {
       final row = results.first;
       return _convertRowToPersonStats(row);
     } catch (e) {
-      print('❌ Error getting person stats by ID: $e');
+      Logger.error('❌ Error getting person stats by ID', e);
       rethrow;
     }
   }
@@ -164,7 +165,7 @@ class MySqlService {
 
       return statsResults.isNotEmpty;
     } catch (e) {
-      print('❌ Authentication error: $e');
+      Logger.error('❌ Authentication error', e);
       return false;
     }
   }
@@ -180,7 +181,7 @@ class MySqlService {
 
       return results.map((row) => _convertRowToPersonStats(row)).toList();
     } catch (e) {
-      print('❌ Error getting all users: $e');
+      Logger.error('❌ Error getting all users', e);
       rethrow;
     }
   }
@@ -196,7 +197,7 @@ class MySqlService {
 
       return results.map((row) => _convertRowToPersonStats(row)).toList();
     } catch (e) {
-      print('❌ Error getting union members: $e');
+      Logger.error('❌ Error getting union members', e);
       rethrow;
     }
   }
@@ -222,7 +223,7 @@ class MySqlService {
 
       return true;
     } catch (e) {
-      print('❌ Error updating password: $e');
+      Logger.error('❌ Error updating password', e);
       return false;
     }
   }
@@ -257,7 +258,7 @@ class MySqlService {
         'non_union_members': totalCount - unionCount,
       };
     } catch (e) {
-      print('❌ Error getting database stats: $e');
+      Logger.error('❌ Error getting database stats', e);
       rethrow;
     }
   }
@@ -297,7 +298,7 @@ class MySqlService {
       final testValue = results.first['test'] as int;
       return testValue == 1;
     } catch (e) {
-      print('❌ Connection test failed: $e');
+      Logger.error('❌ Connection test failed', e);
       return false;
     }
   }

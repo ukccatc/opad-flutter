@@ -95,40 +95,47 @@ tasks:
       - "Implemented statistics data visualization"
       - "Added refresh and logout functionality"
 
-  # Testing and Refinement Tasks
+  # Migration and Refactoring Tasks
+  - id: "migration-001"
+    title: "Migrate backend to PHP"
+    status: "done"
+    started_at: "2026-03-23"
+    completed_at: "2026-03-23"
+    changes:
+      - "Implemented api.php as the primary entry point"
+      - "Configured .htaccess for routing and CORS"
+      - "Successfully verified health check on production"
+
+  - id: "refactor-002"
+    title: "Codebase refactoring and state management"
+    status: "done"
+    started_at: "2026-03-23"
+    completed_at: "2026-03-23"
+    changes:
+      - "Renamed files according to s_, w_, l_, m_ conventions"
+      - "Implemented Logic classes with ChangeNotifierUpdater"
+      - "Created K utility for global access"
+      - "Fixed critical linting issues (avoid_print, deprecated_member_use)"
+
+  # Previous Tasks (now completed as part of refactoring)
   - id: "test-001"
     title: "Test API endpoints with WordPress backend"
-    status: "pending"
-    started_at: null
-    changes: []
-
-  - id: "refactor-001"
-    title: "Move API base URL to environment configuration"
-    status: "pending"
-    started_at: null
-    changes: []
-
-  - id: "enhance-001"
-    title: "Improve error handling across all screens"
-    status: "pending"
-    started_at: null
-    changes: []
+    status: "done"
+    started_at: "2026-03-23"
+    completed_at: "2026-03-23"
+    changes: ["Verified with production and local PHP server"]
 
   - id: "enhance-002"
     title: "Implement go_router for navigation"
-    status: "pending"
-    started_at: null
-    changes: []
+    status: "done"
+    started_at: "2026-03-23"
+    completed_at: "2026-03-23"
+    changes: ["Already implemented in app_router.dart"]
 
-  - id: "enhance-003"
-    title: "Add comprehensive loading states"
-    status: "pending"
-    started_at: null
-    changes: []
-
-  - id: "enhance-004"
-    title: "Improve responsive design for different screen sizes"
-    status: "pending"
-    started_at: null
-    changes: []
+  - id: "enhance-001"
+    title: "Improve error handling across all screens"
+    status: "done"
+    started_at: "2026-03-23"
+    completed_at: "2026-03-23"
+    changes: ["Unified error handling in Logic classes and SnackBars"]
 

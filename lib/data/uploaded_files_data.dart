@@ -2,7 +2,7 @@
 // Auto-generated from web/assets/uploads/ directory
 // Contains all PDF and DOC files from WordPress uploads folder
 
-import '../models/uploaded_file.dart';
+import 'package:flutter_opad/models/m_uploaded_file.dart';
 
 class UploadedFilesData {
   static final List<UploadedFile> files = [

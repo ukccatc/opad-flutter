@@ -52,3 +52,8 @@ ui-debug.log
 # Environment variables
 .env
 .env.local
+
+# Web and deployment artifacts
+*.zip
+/build/
+dist/

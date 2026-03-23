@@ -2,10 +2,10 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-
-import '../models/article.dart';
-import '../models/person_account.dart';
-import '../models/person_stats.dart';
+import 'package:flutter_opad/models/m_article.dart';
+import 'package:flutter_opad/models/m_person_account.dart';
+import 'package:flutter_opad/models/m_person_stats.dart';
+import '../utils/logger.dart';
 
 /// API Service for web-compatible database access
 /// Uses HTTP requests to a backend API instead of direct MySQL connection
@@ -13,7 +13,7 @@ import '../models/person_stats.dart';
 class ApiService {
   late Dio _dio;
   static const String _baseUrl =
-      'http://localhost:8000/api'; // Backend API server
+      'https://opad.com.ua/backend/'; // Production server
   bool _isConnected = false;
 
   ApiService() {
@@ -34,7 +34,7 @@ class ApiService {
       _isConnected = true;
     } catch (e) {
       _isConnected = false;
-      print('⚠️ API connection failed: $e');
+      Logger.error('⚠️ API connection failed', e);
     }
   }
 
@@ -45,7 +45,7 @@ class ApiService {
   Future<PersonAccount> getPersonAccount(String email) async {
     try {
       final response = await _dio.get(
-        '/users/account',
+        'users/account',
         queryParameters: {'email': email},
       );
 
@@ -54,7 +54,7 @@ class ApiService {
       }
       throw Exception('Failed to get person account: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting person account: $e');
+      Logger.error('❌ Error getting person account', e);
       rethrow;
     }
   }
@@ -63,7 +63,7 @@ class ApiService {
   Future<PersonStats> getPersonStats(String emailOrId) async {
     try {
       final response = await _dio.get(
-        '/users/stats',
+        'users/stats',
         queryParameters: {'emailOrId': emailOrId},
       );
 
@@ -72,7 +72,7 @@ class ApiService {
       }
       throw Exception('Failed to get person stats: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting person stats: $e');
+      Logger.error('❌ Error getting person stats', e);
       rethrow;
     }
   }
@@ -80,27 +80,27 @@ class ApiService {
   /// Authenticate person with email and password
   Future<bool> authenticatePerson(String email, String password) async {
     try {
-      print('🔐 [AUTH] Starting authentication for: $email');
+      Logger.info('🔐 [AUTH] Starting authentication for: $email');
       final passwordHash = _md5Hash(password);
-      print('🔐 [AUTH] Password hash: ${passwordHash.substring(0, 8)}...');
+      Logger.info('🔐 [AUTH] Password hash: ${passwordHash.substring(0, 8)}...');
 
       final response = await _dio.post(
-        '/auth/login',
+        'auth/login',
         data: {'email': email, 'password': passwordHash},
       );
 
-      print('🔐 [AUTH] Response status: ${response.statusCode}');
-      print('🔐 [AUTH] Response data: ${response.data}');
+      Logger.info('🔐 [AUTH] Response status: ${response.statusCode}');
+      Logger.info('🔐 [AUTH] Response data: ${response.data}');
 
       if (response.statusCode == 200) {
         final success = response.data['success'] == true;
-        print('🔐 [AUTH] Authentication result: $success');
+        Logger.info('🔐 [AUTH] Authentication result: $success');
         return success;
       }
-      print('❌ [AUTH] Unexpected status code: ${response.statusCode}');
+      Logger.warning('❌ [AUTH] Unexpected status code: ${response.statusCode}');
       return false;
     } catch (e) {
-      print('❌ [AUTH] Authentication error: $e');
+      Logger.error('❌ [AUTH] Authentication error', e);
       rethrow;
     }
   }
@@ -108,7 +108,7 @@ class ApiService {
   /// Get all users
   Future<List<PersonStats>> getAllUsers() async {
     try {
-      final response = await _dio.get('/users/all');
+      final response = await _dio.get('users/all');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -116,7 +116,7 @@ class ApiService {
       }
       throw Exception('Failed to get all users: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting all users: $e');
+      Logger.error('❌ Error getting all users', e);
       rethrow;
     }
   }
@@ -124,7 +124,7 @@ class ApiService {
   /// Get union members only
   Future<List<PersonStats>> getUnionMembers() async {
     try {
-      final response = await _dio.get('/users/union-members');
+      final response = await _dio.get('users/union-members');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -132,7 +132,7 @@ class ApiService {
       }
       throw Exception('Failed to get union members: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting union members: $e');
+      Logger.error('❌ Error getting union members', e);
       rethrow;
     }
   }
@@ -142,7 +142,7 @@ class ApiService {
     try {
       final passwordHash = _md5Hash(newPassword);
       final response = await _dio.post(
-        '/users/update-password',
+        'users/update-password',
         data: {'email': email, 'password': passwordHash},
       );
 
@@ -151,7 +151,7 @@ class ApiService {
       }
       return false;
     } catch (e) {
-      print('❌ Error updating password: $e');
+      Logger.error('❌ Error updating password', e);
       return false;
     }
   }
@@ -159,14 +159,14 @@ class ApiService {
   /// Get database statistics
   Future<Map<String, dynamic>> getDatabaseStats() async {
     try {
-      final response = await _dio.get('/stats/database');
+      final response = await _dio.get('stats/database');
 
       if (response.statusCode == 200) {
         return response.data;
       }
       throw Exception('Failed to get database stats: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting database stats: $e');
+      Logger.error('❌ Error getting database stats', e);
       rethrow;
     }
   }
@@ -174,10 +174,10 @@ class ApiService {
   /// Test API connection
   Future<bool> testConnection() async {
     try {
-      final response = await _dio.get('/health');
+      final response = await _dio.get('health');
       return response.statusCode == 200;
     } catch (e) {
-      print('❌ API connection test failed: $e');
+      Logger.error('❌ API connection test failed', e);
       return false;
     }
   }
@@ -185,7 +185,7 @@ class ApiService {
   /// Get all articles
   Future<List<Article>> getArticles() async {
     try {
-      final response = await _dio.get('/articles');
+      final response = await _dio.get('articles');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
@@ -193,7 +193,7 @@ class ApiService {
       }
       throw Exception('Failed to get articles: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting articles: $e');
+      Logger.error('❌ Error getting articles', e);
       rethrow;
     }
   }
@@ -201,14 +201,14 @@ class ApiService {
   /// Get article by ID
   Future<Article> getArticle(int id) async {
     try {
-      final response = await _dio.get('/articles/$id');
+      final response = await _dio.get('articles/$id');
 
       if (response.statusCode == 200) {
         return Article.fromJson(response.data);
       }
       throw Exception('Failed to get article: ${response.statusCode}');
     } catch (e) {
-      print('❌ Error getting article: $e');
+      Logger.error('❌ Error getting article', e);
       rethrow;
     }
   }

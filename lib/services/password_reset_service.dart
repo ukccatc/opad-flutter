@@ -4,8 +4,8 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/users_data.dart';
 import 'sql_service.dart';
+import '../utils/logger.dart';
 
 /// Service for password reset functionality
 /// Handles token generation, email sending, and password updates
@@ -18,9 +18,9 @@ class PasswordResetService {
 
   /// Initialize the service
   Future<void> initialize() async {
-    print('🔄 [PASSWORD_RESET] Initializing PasswordResetService');
+    Logger.info('🔄 [PASSWORD_RESET] Initializing PasswordResetService');
     await _sqlService.initialize();
-    print('✅ [PASSWORD_RESET] PasswordResetService initialized');
+    Logger.info('✅ [PASSWORD_RESET] PasswordResetService initialized');
   }
 
   /// Generate a secure reset token
@@ -152,48 +152,41 @@ class PasswordResetService {
   /// 4. Get your Public Key, Service ID, and Template ID
   Future<String?> sendPasswordResetEmail(String email) async {
     try {
-      print('📧 [RESET] Starting password reset for: $email');
+      Logger.info('📧 [RESET] Starting password reset for: $email');
 
       // Check rate limit
       final secondsRemaining = await checkRateLimit();
       if (secondsRemaining != null) {
-        print(
+        Logger.warning(
           '⏱️ [RESET] Rate limit exceeded. Seconds remaining: $secondsRemaining',
         );
         throw RateLimitException(secondsRemaining);
       }
 
-      print('✅ [RESET] Rate limit check passed');
+      Logger.info('✅ [RESET] Rate limit check passed');
 
       // Check if email exists in database (try MySQL first, then fallback to local)
       try {
-        print('🔍 [RESET] Checking if email exists in database...');
+        Logger.info('🔍 [RESET] Checking if email exists in database...');
         await _sqlService.getPersonAccount(email);
-        print('✅ [RESET] Email found in database');
+        Logger.info('✅ [RESET] Email found in database');
       } catch (e) {
-        print(
-          '⚠️ [RESET] Email not found in database, checking local data: $e',
-        );
-        // Fallback to local data for backward compatibility
-        final userData = UsersData.findByEmail(email);
-        if (userData == null) {
-          print('❌ [RESET] Email not found in local data either');
-          return null; // Email not found
-        }
-        print('✅ [RESET] Email found in local data');
+        // No local fallback
+        Logger.warning('❌ [RESET] Email not found in database');
+        return null;
       }
 
       // Generate reset token
       final token = _generateResetToken(email);
-      print('🔑 [RESET] Generated reset token: ${token.substring(0, 8)}...');
+      Logger.info('🔑 [RESET] Generated reset token: ${token.substring(0, 8)}...');
 
       await _saveResetToken(email, token);
-      print('💾 [RESET] Token saved to SharedPreferences');
+      Logger.info('💾 [RESET] Token saved to SharedPreferences');
 
       // Create reset link
       // For web, we'll use the current origin
       final resetLink = getResetLink(email, token);
-      print('🔗 [RESET] Reset link: $resetLink');
+      Logger.info('🔗 [RESET] Reset link: $resetLink');
 
       // EmailJS configuration
       const emailjsServiceId = 'service_c93pzgc';
@@ -206,7 +199,7 @@ class PasswordResetService {
         'https://api.emailjs.com/api/v1.0/email/send',
       );
 
-      print('📤 [RESET] Sending email via EmailJS...');
+      Logger.info('📤 [RESET] Sending email via EmailJS...');
 
       // Prepare email data
       // Note: EmailJS templates may use different variable names
@@ -236,39 +229,39 @@ class PasswordResetService {
           body: jsonEncode(emailData),
         );
 
-        print('📬 [RESET] EmailJS response status: ${response.statusCode}');
+        Logger.info('📬 [RESET] EmailJS response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
-          print('✅ [RESET] Email sent successfully!');
+          Logger.info('✅ [RESET] Email sent successfully!');
           // Save the time of successful request
           await _saveLastRequestTime();
           return token; // Return token for success
         } else {
-          print('❌ [RESET] EmailJS returned status ${response.statusCode}');
+          Logger.warning('❌ [RESET] EmailJS returned status ${response.statusCode}');
           // Parse error response
           try {
             final errorData = jsonDecode(response.body);
             final errorMessage =
                 errorData['message'] ?? errorData['text'] ?? response.body;
-            print('❌ [RESET] EmailJS error: $errorMessage');
+            Logger.error('❌ [RESET] EmailJS error', errorMessage);
             throw Exception('EmailJS API error: $errorMessage');
           } catch (e) {
             if (e is Exception && e.toString().contains('EmailJS API error')) {
               rethrow;
             }
-            print('❌ [RESET] Failed to parse error response: $e');
+            Logger.error('❌ [RESET] Failed to parse error response', e);
             throw Exception(
               'Failed to send email. Status: ${response.statusCode}, Response: ${response.body}',
             );
           }
         }
       } catch (e) {
-        print('❌ [RESET] EmailJS request failed: $e');
+        Logger.error('❌ [RESET] EmailJS request failed', e);
         // Re-throw to be handled by caller
         rethrow;
       }
     } catch (e) {
-      print('❌ [RESET] Error in sendPasswordResetEmail: $e');
+      Logger.error('❌ [RESET] Error in sendPasswordResetEmail', e);
       return null;
     }
   }
@@ -310,39 +303,39 @@ $resetLink
     String newPassword,
   ) async {
     try {
-      print('🔑 [UPDATE_PASSWORD] Starting password update');
-      print('🔑 [UPDATE_PASSWORD] Email: $email');
-      print('🔑 [UPDATE_PASSWORD] Token: ${token.substring(0, 8)}...');
-      print('🔑 [UPDATE_PASSWORD] New password length: ${newPassword.length}');
+      Logger.info('🔑 [UPDATE_PASSWORD] Starting password update');
+      Logger.info('🔑 [UPDATE_PASSWORD] Email: $email');
+      Logger.info('🔑 [UPDATE_PASSWORD] Token: ${token.substring(0, 8)}...');
+      Logger.info('🔑 [UPDATE_PASSWORD] New password length: ${newPassword.length}');
 
       // Verify token first
-      print('🔐 [UPDATE_PASSWORD] Verifying token...');
+      Logger.info('🔐 [UPDATE_PASSWORD] Verifying token...');
       final isValid = await verifyResetToken(email, token);
-      print('🔐 [UPDATE_PASSWORD] Token valid: $isValid');
+      Logger.info('🔐 [UPDATE_PASSWORD] Token valid: $isValid');
 
       if (!isValid) {
-        print('❌ [UPDATE_PASSWORD] Token verification failed');
+        Logger.warning('❌ [UPDATE_PASSWORD] Token verification failed');
         return false;
       }
 
       // Update password in MySQL database
-      print('💾 [UPDATE_PASSWORD] Calling SQL service to update password');
+      Logger.info('💾 [UPDATE_PASSWORD] Calling SQL service to update password');
       final success = await _sqlService.updatePassword(email, newPassword);
 
-      print('💾 [UPDATE_PASSWORD] SQL service result: $success');
+      Logger.info('💾 [UPDATE_PASSWORD] SQL service result: $success');
 
       if (success) {
         // Mark token as used
-        print('🔄 [UPDATE_PASSWORD] Marking token as used');
+        Logger.info('🔄 [UPDATE_PASSWORD] Marking token as used');
         await _removeResetToken(email, token);
-        print('✅ [UPDATE_PASSWORD] Password updated successfully');
+        Logger.info('✅ [UPDATE_PASSWORD] Password updated successfully');
         return true;
       }
 
-      print('❌ [UPDATE_PASSWORD] SQL service returned false');
+      Logger.warning('❌ [UPDATE_PASSWORD] SQL service returned false');
       return false;
     } catch (e) {
-      print('❌ [UPDATE_PASSWORD] Exception: $e');
+      Logger.error('❌ [UPDATE_PASSWORD] Exception', e);
       return false;
     }
   }

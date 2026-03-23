@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import 'config/database_config.dart';
 import 'router/app_router.dart';
 import 'services/sql_service.dart';
+import 'logic/l_login.dart';
+import 'logic/l_home.dart';
+import 'logic/l_articles.dart';
+import 'logic/l_stats.dart';
+import 'logic/l_billing_profile.dart';
+import 'logic/l_files.dart';
+import 'utils/k.dart';
+import 'utils/logger.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,21 +22,33 @@ void main() async {
   final sqlService = SqlService();
   try {
     await sqlService.initialize();
-    print('✅ MySQL connection initialized');
+    Logger.info('✅ MySQL connection initialized');
 
     // Test connection
     final isConnected = await sqlService.testConnection();
     if (isConnected) {
-      print('✅ MySQL connection test successful');
+      Logger.info('✅ MySQL connection test successful');
     } else {
-      print('⚠️ MySQL connection test failed, using local data');
+      Logger.warning('⚠️ MySQL connection test failed, using local data');
     }
   } catch (e) {
-    print('⚠️ MySQL initialization error: $e');
-    print('⚠️ Will use local data only');
+    Logger.error('⚠️ MySQL initialization error', e);
+    Logger.warning('⚠️ Will use local data only');
   }
 
-  runApp(const OpadApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LoginLogic()),
+        ChangeNotifierProvider(create: (_) => HomeLogic()),
+        ChangeNotifierProvider(create: (_) => ArticlesLogic()),
+        ChangeNotifierProvider(create: (_) => StatsLogic()),
+        ChangeNotifierProvider(create: (_) => BillingProfileLogic()),
+        ChangeNotifierProvider(create: (_) => FilesLogic()),
+      ],
+      child: const OpadApp(),
+    ),
+  );
 }
 
 class OpadApp extends StatelessWidget {
@@ -38,6 +58,7 @@ class OpadApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'ОДЕСЬКА ОБЛАСНА ПРОФСПІЛКА АВІАДИСПЕТЧЕРІВ',
+      scaffoldMessengerKey: K.messengerKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.light(
@@ -84,7 +105,7 @@ class OpadApp extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
           ),
           color: Colors.white,
-          shadowColor: Colors.black.withOpacity(0.1),
+          shadowColor: Colors.black.withValues(alpha: 0.1),
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
@@ -202,7 +223,7 @@ class OpadApp extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
-              color: const Color(0xFF0096D6).withOpacity(0.3),
+              color: const Color(0xFF0096D6).withValues(alpha: 0.3),
               width: 1,
             ),
           ),

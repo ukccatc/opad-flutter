@@ -1,3 +1,5 @@
+import '../utils/logger.dart';
+
 /// Database configuration for direct MySQL connection
 /// IMPORTANT: For production, these credentials should be stored securely
 /// and not hardcoded in the app
@@ -33,12 +35,12 @@ class DatabaseConfig {
     DatabaseConfig.username = username ?? DatabaseConfig.username;
     DatabaseConfig.password = password ?? DatabaseConfig.password;
 
-    print('Database Config Initialized:');
-    print('  Host: ${DatabaseConfig.host}');
-    print('  Port: ${DatabaseConfig.port}');
-    print('  Database: ${DatabaseConfig.database}');
-    print('  Username: ${DatabaseConfig.username}');
-    print(
+    Logger.info('Database Config Initialized:');
+    Logger.info('  Host: ${DatabaseConfig.host}');
+    Logger.info('  Port: ${DatabaseConfig.port}');
+    Logger.info('  Database: ${DatabaseConfig.database}');
+    Logger.info('  Username: ${DatabaseConfig.username}');
+    Logger.info(
       '  Password: ${DatabaseConfig.password.isNotEmpty ? "******" : "not set"}',
     );
   }

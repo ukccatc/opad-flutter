@@ -1,0 +1,392 @@
+Analyzing flutter-opad...                                       
+
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:36:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:37:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:38:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:39:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:40:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/config/database_config.dart:41:5 • avoid_print
+   info • The private field _files could be 'final' • lib/logic/l_files.dart:7:22 • prefer_final_fields
+   info • Don't invoke 'print' in production code • lib/main.dart:24:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:29:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:31:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:34:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/main.dart:35:5 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/main.dart:107:37 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/main.dart:225:46 • deprecated_member_use
+   info • 'dart:html' is deprecated and shouldn't be used. Use package:web and dart:js_interop instead • lib/router/app_router.dart:1:1 • deprecated_member_use
+   info • Don't use web-only libraries outside Flutter web plugins • lib/router/app_router.dart:1:1 • avoid_web_libraries_in_flutter
+   info • Statements in an if should be enclosed in a block • lib/router/app_router.dart:21:7 • curly_braces_in_flow_control_structures
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:32:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:33:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:45:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:46:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:47:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:48:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:49:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:59:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:65:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:71:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:78:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:83:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:87:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:88:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:89:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:90:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:96:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:104:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:175:15 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:179:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:180:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:181:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:182:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:183:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:184:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:185:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:186:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:187:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:188:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:189:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:190:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:191:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:194:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:195:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:196:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/router/app_router.dart:198:13 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_article_detail.dart:206:24 • deprecated_member_use
+   info • Unnecessary use of string interpolation • lib/screens/s_article_detail.dart:248:30 • unnecessary_string_interpolations
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_articles.dart:237:54 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/screens/s_files.dart:65:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_files.dart:66:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_files.dart:67:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_files.dart:132:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_files.dart:133:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_files.dart:219:41 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_files.dart:465:35 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_files.dart:500:46 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_files.dart:520:44 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/screens/s_forgot_password.dart:96:7 • avoid_print
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_forgot_password.dart:273:59 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_forgot_password.dart:327:49 • deprecated_member_use
+warning • Unused import: '../logic/l_home.dart' • lib/screens/s_home.dart:4:8 • unused_import
+   info • Don't use 'BuildContext's across async gaps • lib/screens/s_home.dart:22:9 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/s_home.dart:26:5 • use_build_context_synchronously
+   info • Don't use 'BuildContext's across async gaps • lib/screens/s_login.dart:31:9 • use_build_context_synchronously
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:34:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:35:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:36:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:40:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:48:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:56:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:58:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:61:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:80:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:81:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:88:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:95:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:99:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:106:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:109:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:113:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:116:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:123:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:131:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:132:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:142:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:145:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:151:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/screens/s_reset_password.dart:159:7 • avoid_print
+warning • Unused import: '../models/m_person_stats.dart' • lib/screens/s_stats.dart:3:8 • unused_import
+   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/s_stats.dart:215:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_stats.dart:216:52 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_stats.dart:286:62 • deprecated_member_use
+   info • 'surfaceVariant' is deprecated and shouldn't be used. Use surfaceContainerHighest instead. This feature was deprecated after v3.18.0-0.1.pre • lib/screens/s_stats.dart:287:45 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_stats.dart:287:60 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_stats.dart:291:55 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/screens/s_stats.dart:292:55 • deprecated_member_use
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:56:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:74:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:82:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:84:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:91:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:92:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:96:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:99:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:102:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:118:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:134:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:153:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:168:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:179:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:195:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/api_service.dart:210:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:23:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:38:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:42:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:53:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:55:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:84:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:106:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:128:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:167:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:183:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:199:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:225:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:260:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/mysql_service.dart:300:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:20:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:22:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:154:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:159:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:165:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:169:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:171:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:174:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:180:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:183:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:188:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:201:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:231:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:234:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:239:11 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:245:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:251:13 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:258:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:263:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:305:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:306:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:307:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:308:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:311:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:313:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:316:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:321:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:324:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:328:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:330:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:334:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/password_reset_service.dart:337:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:30:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:36:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:48:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:57:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:72:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:81:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:97:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:106:9 • avoid_print
+warning • The declaration '_md5Hash' isn't referenced • lib/services/sql_service.dart:115:10 • unused_element
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:128:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:136:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:150:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:158:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:172:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:181:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:187:5 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:197:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/services/sql_service.dart:205:9 • avoid_print
+   info • 'dart:html' is deprecated and shouldn't be used. Use package:web and dart:js_interop instead • lib/utils/file_downloader.dart:1:1 • deprecated_member_use
+   info • Don't use web-only libraries outside Flutter web plugins • lib/utils/file_downloader.dart:1:1 • avoid_web_libraries_in_flutter
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:12:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:33:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:35:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:41:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:51:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:59:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:60:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:64:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:67:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:75:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:84:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:87:9 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:91:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:92:7 • avoid_print
+   info • Don't invoke 'print' in production code • lib/utils/file_downloader.dart:94:7 • avoid_print
+   info • Angle brackets will be interpreted as HTML • lib/utils/k.dart:24:62 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • lib/utils/k.dart:25:47 • unintended_html_in_doc_comment
+   info • Angle brackets will be interpreted as HTML • lib/utils/k.dart:28:74 • unintended_html_in_doc_comment
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/w_logo.dart:172:17 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/widgets/w_logo.dart:173:17 • deprecated_member_use
+   info • Can't use a relative path to import a library in 'lib' • scripts/parse_wordpress_posts.dart:5:8 • avoid_relative_lib_imports
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:9:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:10:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:11:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:12:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:17:3 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:21:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:29:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:37:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:38:5 • avoid_print
+   info • Don't invoke 'print' in production code • scripts/parse_wordpress_posts.dart:40:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:5:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:10:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:14:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:17:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:19:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:25:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:26:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:27:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:28:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:30:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:34:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:39:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:40:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:41:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:42:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:43:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:44:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:45:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:48:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:49:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:50:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:51:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:52:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:53:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_connection.dart:56:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:5:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:6:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:7:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:9:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:10:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:11:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:12:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:13:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:14:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:17:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:22:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:26:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:29:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:31:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:35:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:38:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:39:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:40:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:41:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:43:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:47:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:50:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:53:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:54:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:57:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:60:13 • avoid_print
+   info • Use interpolation to compose strings and values • test_fetch_data.dart:71:21 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values • test_fetch_data.dart:74:21 • prefer_interpolation_to_compose_strings
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:79:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:83:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:88:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:92:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:95:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:98:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:99:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:102:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:105:13 • avoid_print
+   info • Use interpolation to compose strings and values • test_fetch_data.dart:116:21 • prefer_interpolation_to_compose_strings
+   info • Use interpolation to compose strings and values • test_fetch_data.dart:119:21 • prefer_interpolation_to_compose_strings
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:123:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:127:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:132:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:136:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:142:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:149:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:156:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:157:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:158:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:159:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:162:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:164:15 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:167:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:168:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:171:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:175:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:181:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:186:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:187:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:188:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:189:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:190:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:193:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:196:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:200:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:203:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:205:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:207:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:208:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:209:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:210:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:211:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:212:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:213:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:217:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:218:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:219:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:220:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:222:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:223:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:224:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:225:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:227:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:228:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:229:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:230:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:234:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:235:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:236:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:237:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:239:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:240:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:241:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:242:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:245:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:246:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_fetch_data.dart:247:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:5:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:6:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:7:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:8:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:9:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:10:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:11:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:14:3 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:19:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:23:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:26:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:28:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:31:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:33:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:34:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:35:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:36:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:39:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:47:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:53:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:56:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:57:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:58:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:59:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:61:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:66:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:69:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:72:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:79:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:85:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:89:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:92:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:95:11 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:102:13 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:106:9 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:109:7 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:113:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:115:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:117:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:118:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:119:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:120:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:121:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:122:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:123:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:124:5 • avoid_print
+   info • Don't invoke 'print' in production code • test_mysql.dart:129:3 • avoid_print
+
+388 issues found. (ran in 2.0s)

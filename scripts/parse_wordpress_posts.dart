@@ -1,8 +1,9 @@
+// ignore_for_file: avoid_print
 // Script to parse WordPress SQL dump and generate articles_data.dart
 // Usage: dart scripts/parse_wordpress_posts.dart <path_to_sql_file>
 
 import 'dart:io';
-import '../lib/services/wordpress_sql_parser.dart';
+import 'package:flutter_opad/services/wordpress_sql_parser.dart';
 
 void main(List<String> args) async {
   if (args.isEmpty) {

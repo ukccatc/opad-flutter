@@ -1,0 +1,18 @@
+# CORS Headers for Flutter Web local development
+<IfModule mod_headers.c>
+    SetEnvIf Origin "^(https?://(localhost|127\.0\.0\.1|opad\.com\.ua|www\.opad\.com\.ua)(:[0-9]+)?)$" ORIGIN_SUB_DOMAIN=$1
+    Header set Access-Control-Allow-Origin "%{ORIGIN_SUB_DOMAIN}e" env=ORIGIN_SUB_DOMAIN
+    Header set Access-Control-Allow-Credentials "true"
+    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    Header set Access-Control-Allow-Headers "Content-Type, Authorization, X-Requested-With, Accept, Origin"
+</IfModule>
+
+RewriteEngine On
+
+# Explicitly handle the health check to avoid routing issues
+RewriteRule ^health/?$ api.php?route=health [L,QSA]
+
+# General routing for all other requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ api.php?route=$1 [L,QSA]
