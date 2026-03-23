@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../services/password_reset_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -30,20 +31,40 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   void initState() {
     super.initState();
-    // Debug: Print received parameters
-    print('ResetPasswordScreen initialized');
-    print('Email from widget: ${widget.email}');
-    print('Token from widget: ${widget.token}');
-    
+    print('🔄 [RESET_SCREEN] initState called');
+    print('🔄 [RESET_SCREEN] Email: ${widget.email}');
+    print('🔄 [RESET_SCREEN] Token: ${widget.token}');
+
     // Check if parameters are empty
     if (widget.email.isEmpty || widget.token.isEmpty) {
+      print('❌ [RESET_SCREEN] Email or token is empty');
       setState(() {
-        _error = 'Посилання для відновлення пароля некоректне. Перевірте правильність посилання або запросіть нове.';
+        _error =
+            'Посилання для відновлення пароля некоректне. Перевірте правильність посилання або запросіть нове.';
       });
       return;
     }
-    
-    _verifyToken();
+
+    print(
+      '✅ [RESET_SCREEN] Parameters valid, initializing and verifying token',
+    );
+    _initializeAndVerify();
+  }
+
+  Future<void> _initializeAndVerify() async {
+    try {
+      print('🔄 [RESET_SCREEN] Initializing password reset service');
+      await _passwordResetService.initialize();
+      print('✅ [RESET_SCREEN] Password reset service initialized');
+      await _verifyToken();
+    } catch (e) {
+      print('❌ [RESET_SCREEN] Error during initialization: $e');
+      if (mounted) {
+        setState(() {
+          _error = 'Помилка при ініціалізації: ${e.toString()}';
+        });
+      }
+    }
   }
 
   @override
@@ -56,39 +77,50 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Future<void> _verifyToken() async {
     // go_router automatically decodes query parameters, so widget.email should already be decoded
     // But we'll use it as-is since the service normalizes email internally
-    print('Verifying token for email: ${widget.email}');
-    print('Token: ${widget.token}');
-    
+    print('🔐 [RESET_SCREEN] Verifying token for email: ${widget.email}');
+    print('🔐 [RESET_SCREEN] Token: ${widget.token}');
+
     final isValid = await _passwordResetService.verifyResetToken(
       widget.email,
       widget.token,
     );
 
-    print('Token verification result: $isValid');
+    print('🔐 [RESET_SCREEN] Token verification result: $isValid');
 
     if (mounted) {
       setState(() {
         _isVerifyingToken = false;
         _isTokenValid = isValid;
         if (!isValid) {
+          print('❌ [RESET_SCREEN] Token is invalid');
           _error =
               'Посилання для відновлення пароля недійсне або застаріле. Запросите нове посилання.';
+        } else {
+          print('✅ [RESET_SCREEN] Token is valid');
         }
       });
     }
   }
 
   Future<void> _handleResetPassword() async {
+    print('🔑 [RESET_SCREEN] Reset password button clicked');
+
     if (!_formKey.currentState!.validate()) {
+      print('❌ [RESET_SCREEN] Form validation failed');
       return;
     }
 
+    print('✅ [RESET_SCREEN] Form validation passed');
+
     if (_passwordController.text != _confirmPasswordController.text) {
+      print('❌ [RESET_SCREEN] Passwords do not match');
       setState(() {
         _error = 'Паролі не співпадають';
       });
       return;
     }
+
+    print('✅ [RESET_SCREEN] Passwords match');
 
     setState(() {
       _isLoading = true;
@@ -96,21 +128,27 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      // go_router automatically decodes query parameters
-      print('Updating password for email: ${widget.email}');
-      
+      print('🔄 [RESET_SCREEN] Calling updatePassword for: ${widget.email}');
+      print(
+        '🔄 [RESET_SCREEN] New password length: ${_passwordController.text.length}',
+      );
+
       final success = await _passwordResetService.updatePassword(
         widget.email,
         widget.token,
         _passwordController.text,
       );
 
+      print('🔄 [RESET_SCREEN] updatePassword result: $success');
+
       if (success) {
+        print('✅ [RESET_SCREEN] Password reset successful');
         setState(() {
           _passwordReset = true;
           _isLoading = false;
         });
       } else {
+        print('❌ [RESET_SCREEN] Password reset failed');
         setState(() {
           _error =
               'Помилка при зміні пароля. Посилання може бути недійсним або застарілим.';
@@ -118,6 +156,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         });
       }
     } catch (e) {
+      print('❌ [RESET_SCREEN] Exception during password reset: $e');
       setState(() {
         _error = 'Помилка: ${e.toString()}';
         _isLoading = false;
@@ -141,12 +180,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               child: _passwordReset
                   ? _buildSuccessView()
                   : _isVerifyingToken
-                      ? _buildLoadingView()
-                      : !_isTokenValid
-                          ? _buildErrorView()
-                          : Form(
-                              key: _formKey,
-                              child: Column(
+                  ? _buildLoadingView()
+                  : !_isTokenValid
+                  ? _buildErrorView()
+                  : Form(
+                      key: _formKey,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           // Icon Section
@@ -187,9 +226,10 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surfaceVariant.withOpacity(0.5),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .surfaceContainerHighest
+                                  .withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -354,9 +394,9 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         const SizedBox(height: 32),
         Text(
           'Посилання недійсне',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
         Container(

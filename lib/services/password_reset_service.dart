@@ -16,6 +16,13 @@ class PasswordResetService {
   static const int _tokenExpirationHours = 24; // Token valid for 24 hours
   static const int _rateLimitMinutes = 1; // Rate limit: 1 request per minute
 
+  /// Initialize the service
+  Future<void> initialize() async {
+    print('🔄 [PASSWORD_RESET] Initializing PasswordResetService');
+    await _sqlService.initialize();
+    print('✅ [PASSWORD_RESET] PasswordResetService initialized');
+  }
+
   /// Generate a secure reset token
   String _generateResetToken(String email) {
     final timestamp = DateTime.now().millisecondsSinceEpoch.toString();
@@ -56,10 +63,6 @@ class PasswordResetService {
 
   /// Verify reset token (using SharedPreferences)
   Future<bool> verifyResetToken(String email, String token) async {
-    print('=== Verifying Reset Token ===');
-    print('Email: $email');
-    print('Token: $token');
-
     final prefs = await SharedPreferences.getInstance();
     final tokens = prefs.getStringList(_resetTokensKey) ?? [];
 
@@ -71,10 +74,7 @@ class PasswordResetService {
             data['used'] == false) {
           final expiresAt = DateTime.parse(data['expiresAt']);
           if (DateTime.now().isBefore(expiresAt)) {
-            print('✅ Token verified successfully!');
             return true;
-          } else {
-            print('❌ Token expired');
           }
         }
       } catch (e) {
@@ -82,7 +82,6 @@ class PasswordResetService {
       }
     }
 
-    print('❌ Token verification failed');
     return false;
   }
 
@@ -153,30 +152,48 @@ class PasswordResetService {
   /// 4. Get your Public Key, Service ID, and Template ID
   Future<String?> sendPasswordResetEmail(String email) async {
     try {
+      print('📧 [RESET] Starting password reset for: $email');
+
       // Check rate limit
       final secondsRemaining = await checkRateLimit();
       if (secondsRemaining != null) {
+        print(
+          '⏱️ [RESET] Rate limit exceeded. Seconds remaining: $secondsRemaining',
+        );
         throw RateLimitException(secondsRemaining);
       }
 
+      print('✅ [RESET] Rate limit check passed');
+
       // Check if email exists in database (try MySQL first, then fallback to local)
       try {
+        print('🔍 [RESET] Checking if email exists in database...');
         await _sqlService.getPersonAccount(email);
+        print('✅ [RESET] Email found in database');
       } catch (e) {
+        print(
+          '⚠️ [RESET] Email not found in database, checking local data: $e',
+        );
         // Fallback to local data for backward compatibility
         final userData = UsersData.findByEmail(email);
         if (userData == null) {
+          print('❌ [RESET] Email not found in local data either');
           return null; // Email not found
         }
+        print('✅ [RESET] Email found in local data');
       }
 
       // Generate reset token
       final token = _generateResetToken(email);
+      print('🔑 [RESET] Generated reset token: ${token.substring(0, 8)}...');
+
       await _saveResetToken(email, token);
+      print('💾 [RESET] Token saved to SharedPreferences');
 
       // Create reset link
       // For web, we'll use the current origin
       final resetLink = getResetLink(email, token);
+      print('🔗 [RESET] Reset link: $resetLink');
 
       // EmailJS configuration
       const emailjsServiceId = 'service_c93pzgc';
@@ -188,6 +205,8 @@ class PasswordResetService {
       final emailjsUrl = Uri.parse(
         'https://api.emailjs.com/api/v1.0/email/send',
       );
+
+      print('📤 [RESET] Sending email via EmailJS...');
 
       // Prepare email data
       // Note: EmailJS templates may use different variable names
@@ -211,69 +230,52 @@ class PasswordResetService {
 
       // Send email via EmailJS
       try {
-        print('=== EmailJS Request ===');
-        print('URL: $emailjsUrl');
-        print('Service ID: $emailjsServiceId');
-        print('Template ID: $emailjsTemplateId');
-        print('User ID: $emailjsUserId');
-        print('Public Key: $emailjsPublicKey');
-        print('To Email: $email');
-        print('Reset Link: $resetLink');
-        print('Request Body: ${jsonEncode(emailData)}');
-        print('=====================');
-
         final response = await http.post(
           emailjsUrl,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode(emailData),
         );
 
-        print('=== EmailJS Response ===');
-        print('Status Code: ${response.statusCode}');
-        print('Response Headers: ${response.headers}');
-        print('Response Body: ${response.body}');
-        print('======================');
+        print('📬 [RESET] EmailJS response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
-          print('✅ Email sent successfully!');
+          print('✅ [RESET] Email sent successfully!');
           // Save the time of successful request
           await _saveLastRequestTime();
           return token; // Return token for success
         } else {
+          print('❌ [RESET] EmailJS returned status ${response.statusCode}');
           // Parse error response
           try {
             final errorData = jsonDecode(response.body);
-            print('❌ EmailJS API Error: ${errorData.toString()}');
             final errorMessage =
                 errorData['message'] ?? errorData['text'] ?? response.body;
+            print('❌ [RESET] EmailJS error: $errorMessage');
             throw Exception('EmailJS API error: $errorMessage');
           } catch (e) {
             if (e is Exception && e.toString().contains('EmailJS API error')) {
               rethrow;
             }
-            print(
-              '❌ EmailJS Error (status ${response.statusCode}): ${response.body}',
-            );
+            print('❌ [RESET] Failed to parse error response: $e');
             throw Exception(
               'Failed to send email. Status: ${response.statusCode}, Response: ${response.body}',
             );
           }
         }
-      } catch (e, stackTrace) {
-        print('❌ EmailJS Exception: $e');
-        print('Stack Trace: $stackTrace');
+      } catch (e) {
+        print('❌ [RESET] EmailJS request failed: $e');
         // Re-throw to be handled by caller
         rethrow;
       }
     } catch (e) {
-      print('Error sending password reset email: $e');
+      print('❌ [RESET] Error in sendPasswordResetEmail: $e');
       return null;
     }
   }
 
   /// Get reset link for a given email and token
   String getResetLink(String email, String token) {
-    return '${Uri.base.origin}/reset-password?email=${Uri.encodeComponent(email)}&token=$token';
+    return '${Uri.base.origin}/#/reset-password?email=${Uri.encodeComponent(email)}&token=$token';
   }
 
   /// Alternative: Send email using mailto link (fallback)
@@ -308,34 +310,41 @@ $resetLink
     String newPassword,
   ) async {
     try {
+      print('🔑 [UPDATE_PASSWORD] Starting password update');
+      print('🔑 [UPDATE_PASSWORD] Email: $email');
+      print('🔑 [UPDATE_PASSWORD] Token: ${token.substring(0, 8)}...');
+      print('🔑 [UPDATE_PASSWORD] New password length: ${newPassword.length}');
+
       // Verify token first
+      print('🔐 [UPDATE_PASSWORD] Verifying token...');
       final isValid = await verifyResetToken(email, token);
+      print('🔐 [UPDATE_PASSWORD] Token valid: $isValid');
+
       if (!isValid) {
+        print('❌ [UPDATE_PASSWORD] Token verification failed');
         return false;
       }
 
       // Update password in MySQL database
+      print('💾 [UPDATE_PASSWORD] Calling SQL service to update password');
       final success = await _sqlService.updatePassword(email, newPassword);
+
+      print('💾 [UPDATE_PASSWORD] SQL service result: $success');
 
       if (success) {
         // Mark token as used
+        print('🔄 [UPDATE_PASSWORD] Marking token as used');
         await _removeResetToken(email, token);
-        print('✅ Password updated successfully in MySQL for: $email');
+        print('✅ [UPDATE_PASSWORD] Password updated successfully');
         return true;
       }
 
+      print('❌ [UPDATE_PASSWORD] SQL service returned false');
       return false;
     } catch (e) {
-      print('Error updating password: $e');
+      print('❌ [UPDATE_PASSWORD] Exception: $e');
       return false;
     }
-  }
-
-  /// MD5 hash function
-  String _md5Hash(String input) {
-    final bytes = utf8.encode(input);
-    final digest = md5.convert(bytes);
-    return digest.toString();
   }
 }
 

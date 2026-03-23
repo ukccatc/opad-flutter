@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../services/api_service.dart';
 import '../services/auth_service.dart';
 
@@ -44,6 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) {
+      print('❌ [LOGIN] Form validation failed');
       return;
     }
 
@@ -53,23 +55,34 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final success = await _apiService.loginPerson(
-        _loginController.text.trim(),
-        _passwordController.text,
-      );
+      final email = _loginController.text.trim();
+      final password = _passwordController.text;
+
+      print('🔐 [LOGIN] Attempting login for: $email');
+      print('🔐 [LOGIN] Password length: ${password.length}');
+
+      final success = await _apiService.authenticatePerson(email, password);
+
+      print('🔐 [LOGIN] Authentication result: $success');
 
       if (success) {
-        await _authService.saveLogin(_loginController.text.trim());
+        print('✅ [LOGIN] Login successful for: $email');
+        await _authService.saveLogin(email);
+        print('💾 [LOGIN] Login saved to storage');
+
         if (mounted) {
-          context.go('/stats?login=${_loginController.text.trim()}');
+          print('🔄 [LOGIN] Navigating to stats page');
+          context.go('/stats?login=$email');
         }
       } else {
+        print('❌ [LOGIN] Authentication failed - invalid credentials');
         setState(() {
           _error = 'Невірний логін або пароль';
           _isLoading = false;
         });
       }
     } catch (e) {
+      print('❌ [LOGIN] Login error: $e');
       setState(() {
         _error = e.toString();
         _isLoading = false;

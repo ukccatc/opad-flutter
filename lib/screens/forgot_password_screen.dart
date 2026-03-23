@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../services/password_reset_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -59,33 +60,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     } catch (e) {
       setState(() {
         String errorMessage = 'Помилка при відправці email';
-        
+
         // Handle rate limit exception - show user-friendly message
         if (e is RateLimitException) {
           errorMessage = e.toLocalizedString();
-          print('Rate limit exceeded: ${e.secondsRemaining} seconds remaining');
         } else {
           // Provide more specific error messages
           final errorString = e.toString().toLowerCase();
-          if (errorString.contains('insufficient authentication') || 
+          if (errorString.contains('insufficient authentication') ||
               errorString.contains('authentication scopes')) {
-            errorMessage = 'Помилка авторизації Gmail. Перевірте налаштування EmailJS сервісу.';
-          } else if (errorString.contains('template') || errorString.contains('template_id')) {
-            errorMessage = 'Помилка шаблону email. Перевірте Template ID в EmailJS.';
-          } else if (errorString.contains('service') || errorString.contains('service_id')) {
-            errorMessage = 'Помилка сервісу email. Перевірте Service ID в EmailJS.';
+            errorMessage =
+                'Помилка авторизації Gmail. Перевірте налаштування EmailJS сервісу.';
+          } else if (errorString.contains('template') ||
+              errorString.contains('template_id')) {
+            errorMessage =
+                'Помилка шаблону email. Перевірте Template ID в EmailJS.';
+          } else if (errorString.contains('service') ||
+              errorString.contains('service_id')) {
+            errorMessage =
+                'Помилка сервісу email. Перевірте Service ID в EmailJS.';
           } else if (errorString.contains('status')) {
-            errorMessage = 'Помилка відправки email. Перевірте налаштування EmailJS.';
+            errorMessage =
+                'Помилка відправки email. Перевірте налаштування EmailJS.';
           } else {
             errorMessage = 'Помилка при відправці email: ${e.toString()}';
           }
         }
-        
+
         _error = errorMessage;
         _isLoading = false;
         _emailSent = false; // Reset email sent state on error
       });
-      
+
       // Also print to console for debugging
       print('Error in forgot password screen: $e');
     }
@@ -171,7 +177,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           border: Border.all(
                             color: Theme.of(
                               context,
-                            ).colorScheme.tertiary.withOpacity(0.3),
+                            ).colorScheme.tertiary.withValues(alpha: 0.3),
                             width: 1,
                           ),
                         ),
@@ -316,7 +322,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           color: Theme.of(context).colorScheme.errorContainer,
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.error.withOpacity(0.3),
                             width: 1,
                           ),
                         ),

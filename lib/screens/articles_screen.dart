@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
 import '../models/article.dart';
 import '../services/api_service.dart';
 
@@ -69,17 +70,17 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
                     Text(
                       'Завантаження статей...',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               )
             : _error != null
-                ? _buildErrorView()
-                : _articles.isEmpty
-                    ? _buildEmptyView()
-                    : _buildArticlesList(),
+            ? _buildErrorView()
+            : _articles.isEmpty
+            ? _buildEmptyView()
+            : _buildArticlesList(),
       ),
     );
   }
@@ -107,9 +108,9 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
             Text(
               'Помилка завантаження статей',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.error,
+              ),
             ),
             const SizedBox(height: 8),
             Padding(
@@ -117,8 +118,8 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
               child: Text(
                 _error!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -142,7 +143,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -155,15 +156,15 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
           Text(
             'Статті не знайдено',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Перевірте пізніше для нового контенту',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -189,9 +190,7 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
   Widget _buildArticleCard(Article article) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () {
           context.go('/articles/${article.id}');
@@ -202,103 +201,103 @@ class _ArticlesScreenState extends State<ArticlesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            // Title
-            Text(
-              article.title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
+              // Title
+              Text(
+                article.title,
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+
+              // Quick description (excerpt)
+              if (article.excerpt != null && article.excerpt!.isNotEmpty)
+                Text(
+                  article.excerpt!.replaceAll(RegExp(r'<[^>]*>'), ''),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 8),
-
-            // Quick description (excerpt)
-            if (article.excerpt != null && article.excerpt!.isNotEmpty)
-              Text(
-                article.excerpt!.replaceAll(RegExp(r'<[^>]*>'), ''),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              )
-            else if (article.content.isNotEmpty)
-              Text(
-                article.content.replaceAll(RegExp(r'<[^>]*>'), ''),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
-              ),
-            const SizedBox(height: 12),
-
-            // Tags
-            if (article.tags != null && article.tags!.isNotEmpty)
-              Wrap(
-                spacing: 8,
-                runSpacing: 4,
-                children: article.tags!.map((tag) {
-                  return Chip(
-                    label: Text(
-                      tag,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    backgroundColor: Theme.of(context)
-                        .colorScheme
-                        .primaryContainer
-                        .withOpacity(0.5),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    visualDensity: VisualDensity.compact,
-                  );
-                }).toList(),
-              ),
-
-            if (article.tags != null && article.tags!.isNotEmpty)
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                )
+              else if (article.content.isNotEmpty)
+                Text(
+                  article.content.replaceAll(RegExp(r'<[^>]*>'), ''),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                ),
               const SizedBox(height: 12),
 
-            // Meta information: Author and Created at
-            const Divider(),
-            Row(
-              children: [
-                // Author
-                if (article.author != null) ...[
+              // Tags
+              if (article.tags != null && article.tags!.isNotEmpty)
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: article.tags!.map((tag) {
+                    return Chip(
+                      label: Text(
+                        tag,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).colorScheme.primaryContainer.withOpacity(0.5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      visualDensity: VisualDensity.compact,
+                    );
+                  }).toList(),
+                ),
+
+              if (article.tags != null && article.tags!.isNotEmpty)
+                const SizedBox(height: 12),
+
+              // Meta information: Author and Created at
+              const Divider(),
+              Row(
+                children: [
+                  // Author
+                  if (article.author != null) ...[
+                    Icon(
+                      Icons.person_outline,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      article.author!,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                  ],
+
+                  // Created at time
                   Icon(
-                    Icons.person_outline,
+                    Icons.calendar_today_outlined,
                     size: 16,
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    article.author!,
+                    _formatDate(article.date),
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant,
-                        ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                  const SizedBox(width: 16),
                 ],
-
-                // Created at time
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 16,
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  _formatDate(article.date),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                ),
-              ],
-            ),
+              ),
             ],
           ),
         ),

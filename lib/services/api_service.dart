@@ -1,335 +1,228 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
+import 'package:dio/dio.dart';
+
 import '../models/article.dart';
-import '../models/person_stats.dart';
 import '../models/person_account.dart';
-import 'sql_service.dart';
-import '../data/articles_data.dart';
+import '../models/person_stats.dart';
 
+/// API Service for web-compatible database access
+/// Uses HTTP requests to a backend API instead of direct MySQL connection
+/// This is required for Flutter web since mysql1 package uses RawSocket which isn't supported
 class ApiService {
-  // Dio instance kept for potential future API calls
-  // Currently using local SQL data instead
-  // final Dio _dio = Dio(...);
+  late Dio _dio;
+  static const String _baseUrl =
+      'http://localhost:8000/api'; // Backend API server
+  bool _isConnected = false;
 
-  // Get all articles from WordPress SQL data
-  Future<List<Article>> getArticles() async {
-    // Use WordPress posts data if available, otherwise fall back to dummy data
-    final wpPosts = ArticlesData.getPublishedArticles();
-    
-    if (wpPosts.isNotEmpty) {
-      return wpPosts.map((post) => _convertWordPressPostToArticle(post)).toList();
-    }
-    
-    // Fallback to dummy data if no WordPress posts found
-    return _getDummyArticles();
-  }
-
-  /// Convert WordPress post data to Article model
-  Article _convertWordPressPostToArticle(Map<String, dynamic> post) {
-    // Parse post date
-    DateTime? postDate;
-    try {
-      final dateStr = post['post_date'] as String? ?? post['post_date_gmt'] as String?;
-      if (dateStr != null && dateStr.isNotEmpty) {
-        // WordPress date format: YYYY-MM-DD HH:MM:SS
-        postDate = DateTime.parse(dateStr.replaceAll(' ', 'T'));
-      }
-    } catch (e) {
-      postDate = DateTime.now();
-    }
-
-    // Extract excerpt (remove HTML tags)
-    String? excerpt = post['post_excerpt'] as String?;
-    if (excerpt != null && excerpt.isNotEmpty) {
-      excerpt = excerpt.replaceAll(RegExp(r'<[^>]*>'), '');
-    }
-
-    // Extract content (remove HTML tags for preview)
-    String content = post['post_content'] as String? ?? '';
-    content = content.replaceAll(RegExp(r'<[^>]*>'), '');
-
-    // Build post URL from guid or construct from post_name
-    String? link = post['guid'] as String?;
-    final postName = post['post_name'] as String?;
-    if (link == null && postName != null) {
-      link = 'http://opad.com.ua/?p=${post['ID']}';
-    }
-
-    return Article(
-      id: post['ID'] as int? ?? 0,
-      title: post['post_title'] as String? ?? '',
-      content: content,
-      excerpt: excerpt,
-      featuredImage: null, // Will be handled separately if needed
-      date: postDate ?? DateTime.now(),
-      author: null, // Will be resolved from post_author ID if needed
-      categories: null, // Will be loaded from wp_term_relationships if needed
-      tags: null, // Will be loaded from wp_term_relationships if needed
-      attachments: null, // Will be loaded from wp_posts with post_parent if needed
-      link: link,
+  ApiService() {
+    _dio = Dio(
+      BaseOptions(
+        baseUrl: _baseUrl,
+        connectTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+        contentType: 'application/json',
+      ),
     );
   }
 
-  // SQL Service instance for database operations
-  final SqlService _sqlService = SqlService();
-
-  // Get person stats by login (uses SQL service)
-  Future<PersonStats> getPersonStats(String login) async {
-    return _sqlService.getPersonStatsFromSql(login);
+  /// Initialize API connection (test connectivity)
+  Future<void> initialize() async {
+    try {
+      await testConnection();
+      _isConnected = true;
+    } catch (e) {
+      _isConnected = false;
+      print('⚠️ API connection failed: $e');
+    }
   }
 
-  // Get person account details from SQL database (by email)
+  /// Check if connected to API
+  bool get isConnected => _isConnected;
+
+  /// Get person account details by email
   Future<PersonAccount> getPersonAccount(String email) async {
-    return _sqlService.getPersonAccount(email);
+    try {
+      final response = await _dio.get(
+        '/users/account',
+        queryParameters: {'email': email},
+      );
+
+      if (response.statusCode == 200) {
+        return PersonAccount.fromJson(response.data);
+      }
+      throw Exception('Failed to get person account: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting person account: $e');
+      rethrow;
+    }
   }
 
-  // Login person (uses SQL service for authentication)
-  Future<bool> loginPerson(String login, String password) async {
-    return _sqlService.authenticatePerson(login, password);
+  /// Get person statistics by email or ID
+  Future<PersonStats> getPersonStats(String emailOrId) async {
+    try {
+      final response = await _dio.get(
+        '/users/stats',
+        queryParameters: {'emailOrId': emailOrId},
+      );
+
+      if (response.statusCode == 200) {
+        return PersonStats.fromJson(response.data);
+      }
+      throw Exception('Failed to get person stats: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting person stats: $e');
+      rethrow;
+    }
   }
 
-  // Dummy articles data
-  List<Article> _getDummyArticles() {
-    return [
-      Article(
-        id: 1,
-        title: 'Електричні літаки: майбутнє авіації вже тут',
-        content: '''
-У 2026 році електрична авіація переживає справжній прорив. Компанії по всьому світу активно розробляють та тестують електричні літаки, які можуть кардинально змінити галузь авіаперевезень.
+  /// Authenticate person with email and password
+  Future<bool> authenticatePerson(String email, String password) async {
+    try {
+      print('🔐 [AUTH] Starting authentication for: $email');
+      final passwordHash = _md5Hash(password);
+      print('🔐 [AUTH] Password hash: ${passwordHash.substring(0, 8)}...');
 
-Найбільш перспективні розробки включають:
-- Літаки з гібридними силовими установками, які зменшують викиди CO2 на 75%
-- Повністю електричні регіональні літаки на 9-19 пасажирів
-- Технології акумуляторів нового покоління з щільністю енергії 400 Wh/kg
+      final response = await _dio.post(
+        '/auth/login',
+        data: {'email': email, 'password': passwordHash},
+      );
 
-Перші комерційні рейси електричних літаків плануються на 2027-2028 роки. Це може зробити короткі регіональні перельоти значно дешевшими та екологічнішими.
+      print('🔐 [AUTH] Response status: ${response.statusCode}');
+      print('🔐 [AUTH] Response data: ${response.data}');
 
-Інтерес до електричної авіації підтримують не тільки стартапи, але й великі виробники, такі як Airbus та Boeing, які інвестують мільярди в розробку нових технологій.
-        ''',
-        excerpt:
-            'Електричні літаки стають реальністю: перші комерційні рейси плануються на 2027-2028 роки. Дізнайтеся про найновіші технології та перспективи електричної авіації.',
-        featuredImage: 'https://picsum.photos/800/400?random=1',
-        date: DateTime(2026, 1, 15),
-        author: 'Олександр Петренко',
-        categories: ['Технології', 'Екологія', 'Авіація'],
-        tags: ['електричні літаки', 'екологія', 'технології'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 2,
-        title: 'Supersonic польоти повертаються: Boom Overture та інші проєкти',
-        content: '''
-Після закриття Concorde у 2003 році, надзвукові пасажирські перельоти здавалися історією. Але у 2026 році кілька компаній активно працюють над відродженням цієї технології.
+      if (response.statusCode == 200) {
+        final success = response.data['success'] == true;
+        print('🔐 [AUTH] Authentication result: $success');
+        return success;
+      }
+      print('❌ [AUTH] Unexpected status code: ${response.statusCode}');
+      return false;
+    } catch (e) {
+      print('❌ [AUTH] Authentication error: $e');
+      rethrow;
+    }
+  }
 
-Boom Supersonic планує запустити Overture - надзвуковий літак, який зможе перевозити 65-80 пасажирів зі швидкістю Mach 1.7. Це означає переліт з Нью-Йорка до Лондона за 3,5 години замість 7 годин.
+  /// Get all users
+  Future<List<PersonStats>> getAllUsers() async {
+    try {
+      final response = await _dio.get('/users/all');
 
-Ключові переваги нових надзвукових літаків:
-- Використання екологічного палива (SAF - Sustainable Aviation Fuel)
-- Зниження рівня шуму до прийнятних стандартів
-- Економічна ефективність завдяки новим матеріалам та дизайну
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((item) => PersonStats.fromJson(item)).toList();
+      }
+      throw Exception('Failed to get all users: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting all users: $e');
+      rethrow;
+    }
+  }
 
-Перші тестові польоти Boom Overture очікуються у 2027 році, а комерційна експлуатація - у 2029 році. Це може відкрити нову еру швидких міжконтинентальних перельотів.
-        ''',
-        excerpt:
-            'Надзвукові польоти повертаються! Boom Overture та інші проєкти обіцяють відновити еру швидких міжконтинентальних перельотів з екологічним підходом.',
-        featuredImage: 'https://picsum.photos/800/400?random=2',
-        date: DateTime(2026, 1, 22),
-        author: 'Марія Коваленко',
-        categories: ['Технології', 'Авіація', 'Інновації'],
-        tags: ['supersonic', 'boom', 'швидкість'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 3,
-        title: 'Автономні літаки: коли пілоти стануть зайвими?',
-        content: '''
-Автономні технології проникають у всі сфери транспорту, і авіація не виняток. У 2026 році тестування автономних літаків досягли нового рівня.
+  /// Get union members only
+  Future<List<PersonStats>> getUnionMembers() async {
+    try {
+      final response = await _dio.get('/users/union-members');
 
-Компанії розробляють системи, які можуть:
-- Виконувати повний цикл польоту без втручання людини
-- Обробляти складні метеорологічні умови та непередбачені ситуації
-- Забезпечувати безпеку на рівні або вище, ніж пілот-людина
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((item) => PersonStats.fromJson(item)).toList();
+      }
+      throw Exception('Failed to get union members: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting union members: $e');
+      rethrow;
+    }
+  }
 
-Найбільш просунуті проєкти включають:
-- Автономні вантажні дрони для доставки вантажів
-- Регіональні пасажирські літаки з одним пілотом або без нього
-- Системи дистанційного керування для критичних ситуацій
+  /// Update user password
+  Future<bool> updatePassword(String email, String newPassword) async {
+    try {
+      final passwordHash = _md5Hash(newPassword);
+      final response = await _dio.post(
+        '/users/update-password',
+        data: {'email': email, 'password': passwordHash},
+      );
 
-Експерти прогнозують, що перші комерційні автономні рейси можуть з\'явитися до 2030 року, спочатку на коротких маршрутах та вантажних перевезеннях.
-        ''',
-        excerpt:
-            'Автономні літаки стають реальністю: дізнайтеся про найновіші технології та коли ми побачимо перші комерційні рейси без пілотів.',
-        featuredImage: 'https://picsum.photos/800/400?random=3',
-        date: DateTime(2026, 2, 5),
-        author: 'Дмитро Шевченко',
-        categories: ['Технології', 'Автономізація', 'Авіація'],
-        tags: ['автономні літаки', 'AI', 'майбутнє'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 4,
-        title: 'Вертикальні злітно-посадкові майданчики: міська авіація майбутнього',
-        content: '''
-Концепція літаючих таксі та міської авіації набуває реальних форм у 2026 році. Компанії по всьому світу будують вертикальні злітно-посадкові майданчики (vertiports) у великих містах.
+      if (response.statusCode == 200) {
+        return response.data['success'] == true;
+      }
+      return false;
+    } catch (e) {
+      print('❌ Error updating password: $e');
+      return false;
+    }
+  }
 
-Основні переваги міської авіації:
-- Зменшення часу в дорозі в 5-10 разів порівняно з наземним транспортом
-- Зниження заторів у містах
-- Екологічність завдяки електричним двигунам
+  /// Get database statistics
+  Future<Map<String, dynamic>> getDatabaseStats() async {
+    try {
+      final response = await _dio.get('/stats/database');
 
-Найбільш просунуті проєкти:
-- eVTOL (electric Vertical Take-Off and Landing) літаки від Joby Aviation та Archer Aviation
-- Мережа vertiport у таких містах як Нью-Йорк, Лос-Анджелес, Дубай, Сінгапур
-- Інтеграція з системами громадського транспорту
+      if (response.statusCode == 200) {
+        return response.data;
+      }
+      throw Exception('Failed to get database stats: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting database stats: $e');
+      rethrow;
+    }
+  }
 
-Перші комерційні рейси міських літаючих таксі плануються на 2026-2027 роки. Це може кардинально змінити спосіб пересування у великих мегаполісах.
-        ''',
-        excerpt:
-            'Міська авіація стає реальністю: вертикальні злітно-посадкові майданчики будуються у великих містах. Дізнайтеся про майбутнє міського транспорту.',
-        featuredImage: 'https://picsum.photos/800/400?random=4',
-        date: DateTime(2026, 2, 12),
-        author: 'Анна Мельник',
-        categories: ['Міська авіація', 'Інновації', 'Транспорт'],
-        tags: ['eVTOL', 'міська авіація', 'vertiport'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 5,
-        title: 'Водневі літаки: чи є водень паливом майбутнього?',
-        content: '''
-Водень як альтернатива традиційному авіаційному паливу набуває все більшої популярності у 2026 році. Великі авіакомпанії та виробники інвестують мільярди в розробку водневих технологій.
+  /// Test API connection
+  Future<bool> testConnection() async {
+    try {
+      final response = await _dio.get('/health');
+      return response.statusCode == 200;
+    } catch (e) {
+      print('❌ API connection test failed: $e');
+      return false;
+    }
+  }
 
-Переваги водневих літаків:
-- Нульові викиди CO2 (вихід - тільки вода)
-- Висока щільність енергії
-- Можливість використання існуючої інфраструктури з модифікаціями
+  /// Get all articles
+  Future<List<Article>> getArticles() async {
+    try {
+      final response = await _dio.get('/articles');
 
-Основні технологічні підходи:
-- Пряме спалювання водню в турбореактивних двигунах
-- Використання паливних елементів для генерації електричної енергії
-- Гібридні системи з комбінацією водню та електрики
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((item) => Article.fromJson(item)).toList();
+      }
+      throw Exception('Failed to get articles: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting articles: $e');
+      rethrow;
+    }
+  }
 
-Airbus планує запустити перший комерційний водневий літак до 2035 року. Це може стати ключовим кроком до досягнення угоди про нульові викиди в авіації до 2050 року.
-        ''',
-        excerpt:
-            'Водень може стати паливом майбутнього для авіації. Дізнайтеся про найновіші розробки та перспективи водневих технологій у авіації.',
-        featuredImage: 'https://picsum.photos/800/400?random=5',
-        date: DateTime(2026, 2, 20),
-        author: 'Олег Бондаренко',
-        categories: ['Екологія', 'Технології', 'Авіація'],
-        tags: ['водень', 'екологія', 'альтернативне паливо'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 6,
-        title: 'Космічний туризм: від фантастики до реальності',
-        content: '''
-Космічний туризм перестає бути фантастикою у 2026 році. Кілька компаній успішно проводять комерційні рейси у космос, роблячи космічні подорожі доступнішими.
+  /// Get article by ID
+  Future<Article> getArticle(int id) async {
+    try {
+      final response = await _dio.get('/articles/$id');
 
-Основні гравці на ринку:
-- SpaceX з проєктом Starship для місячних та марсіанських місій
-- Blue Origin з суборбітальними польотами
-- Virgin Galactic з регулярними туристичними рейсами
+      if (response.statusCode == 200) {
+        return Article.fromJson(response.data);
+      }
+      throw Exception('Failed to get article: ${response.statusCode}');
+    } catch (e) {
+      print('❌ Error getting article: $e');
+      rethrow;
+    }
+  }
 
-Ціни на космічні подорожі знижуються:
-- Суборбітальні польоти: від 250,000 до 500,000 доларів
-- Орбітальні польоти: від 50 мільйонів доларів
-- Місячні місії: плануються на кінець 2020-х років
+  /// MD5 hash function (same as WordPress uses)
+  String _md5Hash(String input) {
+    final secret = 'fsdfsd6287gf'; // From WordPress functions.php
+    final bytes = utf8.encode(secret + input);
+    final digest = md5.convert(bytes);
+    return digest.toString();
+  }
 
-Технологічні досягнення:
-- Повторне використання ракет значно знижує вартість
-- Безпека польотів покращується з кожним запуском
-- Нові космічні кораблі розробляються спеціально для туризму
-
-Експерти прогнозують, що до 2030 року космічний туризм може стати доступним для середнього класу завдяки подальшому зниженню вартості та збільшенню частоти рейсів.
-        ''',
-        excerpt:
-            'Космічний туризм стає реальністю: дізнайтеся про найновіші досягнення та коли космічні подорожі стануть доступними для всіх.',
-        featuredImage: 'https://picsum.photos/800/400?random=6',
-        date: DateTime(2026, 3, 1),
-        author: 'Ірина Ткаченко',
-        categories: ['Космос', 'Туризм', 'Технології'],
-        tags: ['космос', 'туризм', 'SpaceX'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 7,
-        title: 'Безпілотні вантажні літаки: революція в логістиці',
-        content: '''
-Безпілотні вантажні літаки перетворюють логістику у 2026 році. Великі компанії, такі як Amazon, UPS та DHL, активно використовують дрони та безпілотні літаки для доставки вантажів.
-
-Основні переваги безпілотної логістики:
-- Швидка доставка в важкодоступні райони
-- Зниження вартості доставки на 60-80%
-- Екологічність порівняно з наземним транспортом
-- Можливість доставки 24/7
-
-Технологічні досягнення:
-- Автономна навігація з використанням AI та машинного навчання
-- Вантажопідйомність до 500 кг для середніх безпілотників
-- Дальність польоту до 1000 км без дозаправки
-- Системи уникнення перешкод та погодних умов
-
-Реальні застосування:
-- Доставка медичних препаратів у віддалені райони
-- Постачання товарів на острови та гірські регіони
-- Швидка доставка експрес-вантажів у містах
-
-Експерти прогнозують, що до 2030 року безпілотні вантажні літаки можуть обробляти до 30% всіх вантажних перевезень, особливо на коротких та середніх відстанях.
-        ''',
-        excerpt:
-            'Безпілотні вантажні літаки революціонізують логістику: дізнайтеся про найновіші технології та як вони змінюють спосіб доставки вантажів.',
-        featuredImage: 'https://picsum.photos/800/400?random=7',
-        date: DateTime(2026, 3, 10),
-        author: 'Володимир Гриценко',
-        categories: ['Логістика', 'Технології', 'Авіація'],
-        tags: ['дрони', 'логістика', 'доставка'],
-        attachments: null,
-        link: null,
-      ),
-      Article(
-        id: 8,
-        title: 'Біопаливо для авіації: зростання виробництва у 2026 році',
-        content: '''
-Біопаливо для авіації (SAF - Sustainable Aviation Fuel) стає основним інструментом зменшення викидів CO2 у 2026 році. Виробництво SAF зростає експоненційно, а великі авіакомпанії зобов\'язуються використовувати його у всіх рейсах.
-
-Основні джерела біопалива:
-- Відходи сільського господарства та харчової промисловості
-- Водорості та мікроводорості
-- Неїстівні олійні культури
-- Відходи лісової промисловості
-
-Переваги SAF:
-- Зниження викидів CO2 на 80% порівняно з традиційним паливом
-- Сумісність з існуючими двигунами та інфраструктурою
-- Можливість використання без модифікацій
-
-Статистика 2026 року:
-- Виробництво SAF зросло на 300% порівняно з 2023 роком
-- Великі авіакомпанії використовують 10-20% SAF у своїх рейсах
-- Плани досягти 100% використання SAF до 2050 року
-
-Виклики та рішення:
-- Висока вартість виробництва (в 2-3 рази дорожче за традиційне паливо)
-- Обмежена доступність сировини
-- Необхідність інвестицій у виробничі потужності
-
-Урядова підтримка та інвестиції приватного сектору допомагають знизити вартість та збільшити виробництво SAF, роблячи його все більш доступним для авіакомпаній по всьому світу.
-        ''',
-        excerpt:
-            'Біопаливо для авіації набуває масштабів: виробництво зросло на 300% у 2026 році. Дізнайтеся про переваги та перспективи Sustainable Aviation Fuel.',
-        featuredImage: 'https://picsum.photos/800/400?random=8',
-        date: DateTime(2026, 3, 18),
-        author: 'Наталія Лисенко',
-        categories: ['Екологія', 'Авіація', 'Енергетика'],
-        tags: ['SAF', 'біопаливо', 'екологія'],
-        attachments: null,
-        link: null,
-      ),
-    ];
+  /// Close API connection (cleanup)
+  Future<void> close() async {
+    _dio.close();
   }
 }
