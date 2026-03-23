@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_opad/config/api_config.dart';
+import 'package:flutter_opad/services/email_service.dart';
+import 'package:flutter_opad/services/password_reset_service.dart';
 import 'package:provider/provider.dart';
 
 import '../services/api_service.dart';
@@ -44,6 +46,9 @@ class K {
   static SqlService get sqlService => SqlService();
   static AuthService get authService => AuthService();
   static ApiService get apiService => ApiService();
+  static EmailService get emailService => EmailService();
+  static PasswordResetService get passwordResetService =>
+      PasswordResetService();
 
   // API Configuration
   static const String apiProductionUrl = 'https://opad.com.ua/backend/';

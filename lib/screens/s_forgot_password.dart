@@ -19,7 +19,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   String? _error;
   bool _emailSent = false;
   String? _userEmail;
-  String? _resetToken;
 
   @override
   void dispose() {
@@ -41,20 +40,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     try {
       final email = _emailController.text.trim();
 
-      // Send password reset email
-      final token = await _passwordResetService.sendPasswordResetEmail(email);
+      // Request password reset
+      final success = await _passwordResetService.requestPasswordReset(email);
 
-      if (token != null) {
+      if (success) {
         setState(() {
           _emailSent = true;
           _userEmail = email;
-          _resetToken = token;
           _isLoading = false;
         });
       } else {
         setState(() {
-          _error =
-              'Користувача з таким email не знайдено. Перевірте правильність введеного email.';
+          _error = 'Не вдалося відправити email. Спробуйте ще раз.';
           _isLoading = false;
         });
       }
@@ -62,38 +59,22 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       setState(() {
         String errorMessage = 'Помилка при відправці email';
 
-        // Handle rate limit exception - show user-friendly message
-        if (e is RateLimitException) {
-          errorMessage = e.toLocalizedString();
+        final errorString = e.toString().toLowerCase();
+        if (errorString.contains('network')) {
+          errorMessage = 'Помилка мережі. Перевірте підключення до інтернету.';
+        } else if (errorString.contains('timeout')) {
+          errorMessage = 'Час очікування вичерпаний. Спробуйте ще раз.';
+        } else if (errorString.contains('unauthorized')) {
+          errorMessage = 'Помилка авторизації. Перевірте налаштування сервера.';
         } else {
-          // Provide more specific error messages
-          final errorString = e.toString().toLowerCase();
-          if (errorString.contains('insufficient authentication') ||
-              errorString.contains('authentication scopes')) {
-            errorMessage =
-                'Помилка авторизації Gmail. Перевірте налаштування EmailJS сервісу.';
-          } else if (errorString.contains('template') ||
-              errorString.contains('template_id')) {
-            errorMessage =
-                'Помилка шаблону email. Перевірте Template ID в EmailJS.';
-          } else if (errorString.contains('service') ||
-              errorString.contains('service_id')) {
-            errorMessage =
-                'Помилка сервісу email. Перевірте Service ID в EmailJS.';
-          } else if (errorString.contains('status')) {
-            errorMessage =
-                'Помилка відправки email. Перевірте налаштування EmailJS.';
-          } else {
-            errorMessage = 'Помилка при відправці email: ${e.toString()}';
-          }
+          errorMessage = 'Помилка при відправці email: ${e.toString()}';
         }
 
         _error = errorMessage;
         _isLoading = false;
-        _emailSent = false; // Reset email sent state on error
+        _emailSent = false;
       });
 
-      // Also print to console for debugging
       Logger.error('Error in forgot password screen', e);
     }
   }
@@ -260,56 +241,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                                     fontStyle: FontStyle.italic,
                                   ),
                             ),
-                            // Development: Show reset link if token is available
-                            if (_resetToken != null) ...[
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.surface,
-                                  borderRadius: BorderRadius.circular(8),
-                                  border: Border.all(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.outline.withValues(alpha: 0.2),
-                                  ),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Для розробки (посилання для відновлення):',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.onTertiaryContainer,
-                                          ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    SelectableText(
-                                      _passwordResetService.getResetLink(
-                                        _userEmail!,
-                                        _resetToken!,
-                                      ),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodySmall
-                                          ?.copyWith(
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                            decoration:
-                                                TextDecoration.underline,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
                           ],
                         ),
                       ),

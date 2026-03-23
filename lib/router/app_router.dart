@@ -1,18 +1,20 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
-import '../screens/s_home.dart';
-import '../screens/s_articles.dart';
+
 import '../screens/s_article_detail.dart';
-import '../screens/s_login.dart';
-import '../screens/s_stats.dart';
+import '../screens/s_articles.dart';
 import '../screens/s_files.dart';
 import '../screens/s_forgot_password.dart';
+import '../screens/s_home.dart';
+import '../screens/s_login.dart';
 import '../screens/s_reset_password.dart';
-import '../widgets/w_main_layout.dart';
+import '../screens/s_stats.dart';
 import '../services/auth_service.dart';
 import '../utils/logger.dart';
+import '../widgets/w_main_layout.dart';
 
 class AppRouter {
   static final AuthService _authService = AuthService();
@@ -98,12 +100,11 @@ class AppRouter {
 
       // If it's a reset-password route with error, still try to show it
       if (state.uri.path == '/reset-password') {
-        final email = state.uri.queryParameters['email'] ?? '';
         final token = state.uri.queryParameters['token'] ?? '';
         Logger.info('Attempting to show reset password screen despite error');
         return MainLayout(
           selectedIndex: _getSelectedIndex(state.uri.path),
-          child: ResetPasswordScreen(email: email, token: token),
+          child: ResetPasswordScreen(token: token),
         );
       }
 
@@ -169,45 +170,29 @@ class AppRouter {
         path: '/reset-password',
         name: 'reset-password',
         builder: (context, state) {
-          // Extract and decode query parameters
-          // go_router should auto-decode, but we'll be explicit for safety
-          String email = state.uri.queryParameters['email'] ?? '';
-          String token = state.uri.queryParameters['token'] ?? '';
-
-          // If email is still encoded (contains %40), decode it manually
-          if (email.contains('%')) {
-            try {
-              email = Uri.decodeComponent(email);
-            } catch (e) {
-              Logger.error('Error decoding email', e);
-            }
-          }
+          // Extract token from query parameters
+          final token = state.uri.queryParameters['token'] ?? '';
 
           Logger.info('=== Reset Password Route Builder ===');
           Logger.info('Full URI: ${state.uri}');
-          Logger.info('Full URI string: ${state.uri.toString()}');
           Logger.info('Path: ${state.uri.path}');
           Logger.info('Query string: ${state.uri.query}');
-          Logger.info('Query params map: ${state.uri.queryParameters}');
-          Logger.info('Email (raw): ${state.uri.queryParameters['email']}');
-          Logger.info('Email (decoded): $email');
           Logger.info('Token: $token');
-          Logger.info('Email isEmpty: ${email.isEmpty}');
           Logger.info('Token isEmpty: ${token.isEmpty}');
-          Logger.info('Email length: ${email.length}');
           Logger.info('Token length: ${token.length}');
 
-          if (email.isEmpty || token.isEmpty) {
-            Logger.warning('⚠️ WARNING: Email or token is empty!');
-            Logger.warning('This will cause the screen to show an error message');
-            Logger.info('Raw query params: ${state.uri.queryParameters}');
+          if (token.isEmpty) {
+            Logger.warning('⚠️ WARNING: Token is empty!');
+            Logger.warning(
+              'This will cause the screen to show an error message',
+            );
           } else {
-            Logger.info('✅ Parameters extracted successfully');
+            Logger.info('✅ Token extracted successfully');
           }
 
           return MainLayout(
             selectedIndex: _getSelectedIndex(state.uri.path),
-            child: ResetPasswordScreen(email: email, token: token),
+            child: ResetPasswordScreen(token: token),
           );
         },
       ),

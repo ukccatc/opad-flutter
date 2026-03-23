@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_opad/logic/l_email.dart';
+import 'package:flutter_opad/logic/l_password_reset.dart';
 import 'package:provider/provider.dart';
+
 import 'config/database_config.dart';
-import 'router/app_router.dart';
-import 'services/sql_service.dart';
-import 'logic/l_login.dart';
-import 'logic/l_home.dart';
 import 'logic/l_articles.dart';
-import 'logic/l_stats.dart';
 import 'logic/l_billing_profile.dart';
 import 'logic/l_files.dart';
+import 'logic/l_home.dart';
+import 'logic/l_login.dart';
+import 'logic/l_stats.dart';
+import 'router/app_router.dart';
+import 'services/sql_service.dart';
 import 'utils/k.dart';
 import 'utils/logger.dart';
 
@@ -45,6 +48,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => StatsLogic()),
         ChangeNotifierProvider(create: (_) => BillingProfileLogic()),
         ChangeNotifierProvider(create: (_) => FilesLogic()),
+        ChangeNotifierProvider(create: (_) => EmailLogic()),
+        ChangeNotifierProvider(create: (_) => PasswordResetLogic()),
       ],
       child: const OpadApp(),
     ),

@@ -5,14 +5,9 @@ import '../services/password_reset_service.dart';
 import '../utils/logger.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  final String email;
   final String token;
 
-  const ResetPasswordScreen({
-    super.key,
-    required this.email,
-    required this.token,
-  });
+const ResetPasswordScreen({super.key, required this.token});
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -28,44 +23,23 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   bool _passwordReset = false;
   bool _isTokenValid = false;
   bool _isVerifyingToken = true;
+  String? _userEmail;
 
   @override
   void initState() {
     super.initState();
     Logger.info('🔄 [RESET_SCREEN] initState called');
-    Logger.info('🔄 [RESET_SCREEN] Email: ${widget.email}');
     Logger.info('🔄 [RESET_SCREEN] Token: ${widget.token}');
 
-    // Check if parameters are empty
-    if (widget.email.isEmpty || widget.token.isEmpty) {
-      Logger.warning('❌ [RESET_SCREEN] Email or token is empty');
+    if (widget.token.isEmpty) {
+      Logger.warning('❌ [RESET_SCREEN] Token is empty');
       setState(() {
-        _error =
-            'Посилання для відновлення пароля некоректне. Перевірте правильність посилання або запросіть нове.';
+        _error = 'Посилання для відновлення пароля некоректне.';
       });
       return;
     }
 
-    Logger.info(
-      '✅ [RESET_SCREEN] Parameters valid, initializing and verifying token',
-    );
-    _initializeAndVerify();
-  }
-
-  Future<void> _initializeAndVerify() async {
-    try {
-      Logger.info('🔄 [RESET_SCREEN] Initializing password reset service');
-      await _passwordResetService.initialize();
-      Logger.info('✅ [RESET_SCREEN] Password reset service initialized');
-      await _verifyToken();
-    } catch (e) {
-      Logger.error('❌ [RESET_SCREEN] Error during initialization', e);
-      if (mounted) {
-        setState(() {
-          _error = 'Помилка при ініціалізації: ${e.toString()}';
-        });
-      }
-    }
+    _verifyToken();
   }
 
   @override
@@ -76,35 +50,30 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   }
 
   Future<void> _verifyToken() async {
-    // go_router automatically decodes query parameters, so widget.email should already be decoded
-    // But we'll use it as-is since the service normalizes email internally
-    Logger.info('🔐 [RESET_SCREEN] Verifying token for email: ${widget.email}');
-    Logger.info('🔐 [RESET_SCREEN] Token: ${widget.token}');
+    Logger.info('� [RESET_SCREEN] Verifying token: ${widget.token}');
 
-    final isValid = await _passwordResetService.verifyResetToken(
-      widget.email,
-      widget.token,
-    );
+    final result = await _passwordResetService.validateToken(widget.token);
 
-    Logger.info('🔐 [RESET_SCREEN] Token verification result: $isValid');
+    Logger.info('🔐 [RESET_SCREEN] Token verification result: $result');
 
     if (mounted) {
       setState(() {
         _isVerifyingToken = false;
-        _isTokenValid = isValid;
-        if (!isValid) {
-          Logger.warning('❌ [RESET_SCREEN] Token is invalid');
-          _error =
-              'Посилання для відновлення пароля недійсне або застаріле. Запросите нове посилання.';
+        if (result != null && result['success'] == true) {
+          _isTokenValid = true;
+          _userEmail = result['email'];
+          Logger.info('✅ [RESET_SCREEN] Token is valid for: $_userEmail');
         } else {
-          Logger.info('✅ [RESET_SCREEN] Token is valid');
+          _isTokenValid = false;
+          Logger.warning('❌ [RESET_SCREEN] Token is invalid');
+          _error = 'Посилання для відновлення пароля недійсне або застаріле.';
         }
       });
     }
   }
 
   Future<void> _handleResetPassword() async {
-    Logger.info('🔑 [RESET_SCREEN] Reset password button clicked');
+    Logger.info('� [RESET_SCREEN] Reset password button clicked');
 
     if (!_formKey.currentState!.validate()) {
       Logger.warning('❌ [RESET_SCREEN] Form validation failed');
@@ -129,18 +98,17 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     });
 
     try {
-      Logger.info('🔄 [RESET_SCREEN] Calling updatePassword for: ${widget.email}');
+      Logger.info('🔄 [RESET_SCREEN] Calling resetPassword');
       Logger.info(
         '🔄 [RESET_SCREEN] New password length: ${_passwordController.text.length}',
       );
 
-      final success = await _passwordResetService.updatePassword(
-        widget.email,
+      final success = await _passwordResetService.resetPassword(
         widget.token,
         _passwordController.text,
       );
 
-      Logger.info('🔄 [RESET_SCREEN] updatePassword result: $success');
+      Logger.info('� [RESET_SCREEN] resetPassword result: $success');
 
       if (success) {
         Logger.info('✅ [RESET_SCREEN] Password reset successful');
@@ -151,8 +119,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       } else {
         Logger.warning('❌ [RESET_SCREEN] Password reset failed');
         setState(() {
-          _error =
-              'Помилка при зміні пароля. Посилання може бути недійсним або застарілим.';
+          _error = 'Помилка при зміні пароля. Спробуйте ще раз.';
           _isLoading = false;
         });
       }
@@ -224,21 +191,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHighest
-                                  .withValues(alpha: 0.5),
-                              borderRadius: BorderRadius.circular(8),
+                          if (_userEmail != null)
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest
+                                    .withValues(alpha: 0.5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                _userEmail!,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                              ),
                             ),
-                            child: Text(
-                              widget.email,
-                              style: Theme.of(context).textTheme.bodyMedium
-                                  ?.copyWith(fontWeight: FontWeight.w500),
-                            ),
-                          ),
                           const SizedBox(height: 40),
                           // New Password Field
                           TextFormField(
