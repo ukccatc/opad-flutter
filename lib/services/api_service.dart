@@ -2,9 +2,12 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_opad/config/api_config.dart';
 import 'package:flutter_opad/models/m_article.dart';
 import 'package:flutter_opad/models/m_person_account.dart';
 import 'package:flutter_opad/models/m_person_stats.dart';
+
+import '../utils/k.dart';
 import '../utils/logger.dart';
 
 /// API Service for web-compatible database access
@@ -12,20 +15,42 @@ import '../utils/logger.dart';
 /// This is required for Flutter web since mysql1 package uses RawSocket which isn't supported
 class ApiService {
   late Dio _dio;
-  static const String _baseUrl =
-      'https://opad.com.ua/backend/'; // Production server
   bool _isConnected = false;
 
   ApiService() {
+    _initializeDio();
+  }
+
+  /// Initialize Dio with current base URL
+  void _initializeDio() {
+    final baseUrl = ApiConfig.instance.useLocalServer
+        ? K.apiLocalUrl
+        : K.apiProductionUrl;
     _dio = Dio(
       BaseOptions(
-        baseUrl: _baseUrl,
+        baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         contentType: 'application/json',
       ),
     );
+    Logger.info(
+      '🔧 API Service initialized with: ${ApiConfig.instance.environment} server',
+    );
   }
+
+  /// Switch between local and server modes
+  void setUseLocalServer(bool useLocal) {
+    if (ApiConfig.instance.useLocalServer != useLocal) {
+      ApiConfig.instance.setUseLocalServer(useLocal);
+      _initializeDio();
+      _isConnected = false;
+      Logger.info('🔄 Switched to ${useLocal ? 'LOCAL' : 'PRODUCTION'} server');
+    }
+  }
+
+  /// Get current base URL
+  String get currentBaseUrl => K.apiBaseUrl;
 
   /// Initialize API connection (test connectivity)
   Future<void> initialize() async {
@@ -82,7 +107,9 @@ class ApiService {
     try {
       Logger.info('🔐 [AUTH] Starting authentication for: $email');
       final passwordHash = _md5Hash(password);
-      Logger.info('🔐 [AUTH] Password hash: ${passwordHash.substring(0, 8)}...');
+      Logger.info(
+        '🔐 [AUTH] Password hash: ${passwordHash.substring(0, 8)}...',
+      );
 
       final response = await _dio.post(
         'auth/login',
